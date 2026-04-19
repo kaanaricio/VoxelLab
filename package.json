@@ -1,0 +1,41 @@
+{
+  "name": "voxellab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "VoxelLab: browser-based medical imaging viewer (static site; no app bundler).",
+  "scripts": {
+    "setup": "node scripts/setup_dev.mjs",
+    "start": "node scripts/run_python.mjs serve.py",
+    "build": "npm run render:config",
+    "render:config": "node scripts/render_config.mjs",
+    "lint": "eslint js viewer.js",
+    "lint:ci": "eslint js viewer.js --max-warnings 0",
+    "check": "npm run check:js && npm run check:py && npm run check:data && npm run check:geometry && npm run test:node && npm run test:browser",
+    "check:js": "npm run lint:ci && npm run check:js:syntax && npm run check:styles",
+    "check:js:syntax": "node --check viewer.js && node --check middleware.js && for f in js/*.js; do node --check \"$f\" || exit 1; done",
+    "check:styles": "node scripts/check_inline_styles.mjs",
+    "check:py": "node scripts/run_python.mjs -m py_compile *.py scripts/*.py && npm run check:py:types",
+    "check:py:types": "node scripts/run_python.mjs -m basedpyright",
+    "check:geometry": "node scripts/check_geometry_parity.mjs",
+    "check:data": "node scripts/run_python.mjs scripts/check_manifest.py --manifest data/manifest.json --config config.json && node scripts/run_python.mjs scripts/check_assets.py --manifest data/manifest.json --mode local-fast",
+    "check:data:full": "node scripts/run_python.mjs scripts/check_assets.py --manifest data/manifest.json --mode full",
+    "check:cloud": "node scripts/run_python.mjs scripts/check_env.py --mode cloud --dry-run",
+    "check:pipeline": "node scripts/run_python.mjs scripts/check_pipeline_ready.py",
+    "ai:doctor": "node scripts/run_python.mjs scripts/check_ai_ready.py",
+    "ai:refresh": "node scripts/run_python.mjs scripts/refresh_ai_data.py",
+    "demo:install": "node scripts/run_python.mjs scripts/install_demo_data.py",
+    "demo:build:lite": "node scripts/run_python.mjs scripts/build_openneuro_lite_pack.py",
+    "modal:submit": "node scripts/run_python.mjs scripts/submit_modal_study.py",
+    "test": "npm run test:node && npm run test:browser",
+    "test:node": "node --test tests/*.test.mjs",
+    "test:python": "node scripts/run_python.mjs -m pytest -q",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.59.1",
+    "eslint": "^9.39.4",
+    "globals": "^15.15.0"
+  }
+}

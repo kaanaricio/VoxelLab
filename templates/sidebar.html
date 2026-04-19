@@ -1,0 +1,40 @@
+<div class="sidebar-header sidebar-header-left">
+  <div class="sidebar-actions">
+    <button class="act-btn" id="btn-toggle-left" data-tip="Hide Sidebar" data-tip-pos="right" aria-label="Hide Sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div class="series-scroll">
+  <button class="sidebar-row" id="btn-upload" aria-label="Upload a DICOM study">
+    <svg class="sidebar-ico"><use href="icons.svg#i-upload"/></svg>
+    <span>Upload study</span>
+  </button>
+  <button class="sidebar-row mobile-hidden" id="btn-cmdk-open" aria-label="Search actions">
+    <svg class="sidebar-ico"><use href="icons.svg#i-search"/></svg>
+    <span>Search</span>
+    <span class="sidebar-shortcut"><kbd>⌘</kbd><kbd>K</kbd></span>
+  </button>
+
+  <ul class="series-list" id="pinned-list"></ul>
+
+  <div class="section-header">
+    <span class="section-title">Studies</span>
+    <div class="sidebar-actions">
+      <button class="act-btn" id="btn-sort-studies" data-tip="Sort studies" data-tip-pos="bottom-end" aria-label="Sort studies">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M7 12h10M10 18h4"/></svg>
+      </button>
+      <button class="act-btn" id="btn-new-folder" data-tip="New folder" data-tip-pos="bottom-end" aria-label="New folder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 10v6M9 13h6"/>
+          <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <ul class="series-list" id="series-list"></ul>
+</div>

@@ -1,0 +1,361 @@
+  /* Responsive grid: collapse sidebars at narrower viewports so the
+     main canvas keeps a usable size. Right sidebar goes first (it's
+     secondary — findings + shortcuts). Left sidebar (series list)
+     goes at very narrow widths (mobile). */
+  @media (max-width: 1100px) {
+    .app { grid-template-columns: 208px 1fr; }
+  }
+  @media (max-width: 640px) {
+    .app {
+      grid-template-columns: 1fr;
+      height: 100vh;
+      height: 100dvh;
+    }
+  }
+
+  /* Mobile backdrop — behind sidebars, above canvas. Click to close. */
+  .mobile-backdrop {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 199;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mobile-backdrop.visible { display: block; }
+
+  /* Coarse pointer: larger targets, no hover tooltips */
+  @media (pointer: coarse) {
+    /* Touch has no hover state — keep the singleton .tip-bubble off the screen */
+    .tip-bubble { display: none !important; }
+
+    /* Toolbar hit targets: 44px minimum */
+    .icon-btn {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-lg);
+    }
+    .icon-btn .ico { width: 18px; height: 18px; }
+    .icon-btn.labeled {
+      height: 44px; padding: 0 14px 0 10px;
+      font-size: 13px;
+    }
+    .icon-btn.labeled .ico { width: 16px; height: 16px; }
+    .icon-btn.cine { width: 44px; height: 44px; }
+
+    .toolbox-trigger {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-lg);
+    }
+    .toolbox-trigger .ico { width: 18px; height: 18px; }
+
+    /* Toolbox panel: bigger buttons inside floating panels */
+    .toolbox-panel { padding: 6px; gap: 4px; }
+
+    /* Scrubber: fatter track + bigger thumb for finger dragging */
+    .scrubber input[type=range] { height: 8px; }
+    .scrubber input[type=range]::-webkit-slider-thumb {
+      width: 28px; height: 28px;
+    }
+    .scrubber input[type=range]::-moz-range-thumb {
+      width: 28px; height: 28px;
+    }
+    .scrubber input[type=range]::-webkit-slider-thumb:hover {
+      transform: none;
+      box-shadow: 0 0 0 1.5px var(--text), 0 1px 4px rgba(0,0,0,0.4);
+    }
+    aside.right input[type=range]::-webkit-slider-thumb:hover {
+      transform: none;
+      box-shadow: 0 0 0 1px var(--text), 0 1px 3px rgba(0,0,0,0.35);
+    }
+    aside.right input[type=range]::-webkit-slider-thumb {
+      width: 22px;
+      height: 22px;
+    }
+    aside.right input[type=range]::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Cine FPS thumb: smaller than main scrub (28px), still touchable */
+    .cine-speed input[type=range] {
+      height: 8px;
+    }
+    .cine-speed input[type=range]::-webkit-slider-thumb {
+      width: 22px; height: 22px;
+    }
+    .cine-speed input[type=range]::-webkit-slider-thumb:hover {
+      transform: none;
+      box-shadow: 0 0 0 1px var(--text), 0 1px 3px rgba(0,0,0,0.35);
+    }
+    .cine-speed input[type=range]::-moz-range-thumb {
+      width: 22px; height: 22px;
+    }
+
+    /* Toolbar separators: taller to match bigger buttons */
+    .toolbar-sep { height: 24px; }
+
+    /* Controls bar: more padding for touch */
+    .controls { padding: 10px 16px 12px; gap: 10px; }
+
+    /* Custom dropdown trigger: taller */
+    .custom-dropdown { height: 36px; }
+    .custom-dropdown .dd-trigger { height: 36px; font-size: 12px; padding: 0 10px 0 12px; }
+    .tool-group .custom-dropdown:has(> .dd-trigger) {
+      height: 44px;
+    }
+    .tool-group .custom-dropdown:has(> .dd-trigger) .dd-trigger {
+      height: 44px;
+      font-size: 13px;
+      padding: 0 10px 0 12px;
+    }
+    .custom-dropdown .dd-item { padding: 10px 14px; font-size: 12px; }
+
+    /* Pill buttons: taller */
+    .pill { min-height: 36px; padding: 0 12px; font-size: 12px; }
+
+    /* Overlay opacity slider: match cine / scrub touch sizing */
+    .overlay-opacity-wrap input[type=range] {
+      height: 8px;
+    }
+    .overlay-opacity-wrap input[type=range]::-webkit-slider-thumb {
+      width: 22px; height: 22px;
+    }
+    .overlay-opacity-wrap input[type=range]::-webkit-slider-thumb:hover {
+      transform: none;
+      box-shadow: 0 0 0 1px var(--text), 0 1px 3px rgba(0,0,0,0.35);
+    }
+    .overlay-opacity-wrap input[type=range]::-moz-range-thumb {
+      width: 22px; height: 22px;
+    }
+
+    /* Remove hover effects that feel sticky on touch */
+    .icon-btn:hover { background: transparent; color: var(--icon-idle); }
+    .icon-btn.active:hover { background: var(--accent-bg); color: var(--text); }
+    .toolbox-trigger:hover { background: var(--elev); color: var(--icon-idle); }
+    .toolbox.open .toolbox-trigger:hover,
+    .toolbox-trigger.active:hover { background: var(--accent-bg); color: var(--text); }
+
+    /* Sidebar buttons: bigger hit targets */
+    .act-btn { width: 36px; height: 36px; }
+
+    /* Suppress hover-only floating tooltips */
+    #series-thumb-tip { display: none !important; }
+
+    /* Active tap feedback (replaces hover highlight) */
+    .icon-btn:active:not(:disabled) { background: var(--hover); color: var(--text); }
+    .toolbox-trigger:active { background: var(--hover); color: var(--text); }
+    .custom-dropdown .dd-trigger:active { border-color: var(--dim); }
+    .custom-dropdown .dd-item:active { background: var(--hover); }
+    .pill:active { background: var(--hover); }
+  }
+
+  /* ----- Tool rail: desktop is transparent (no layout), mobile is the scroll region ----- */
+  /* Desktop baseline — display: contents so children stay direct flex items of .controls
+     and the existing desktop layout is untouched. */
+  .tool-rail-wrap, .tool-rail { display: contents; }
+
+  /* Slide-in header for the right panel — only meaningful once the panel becomes
+     an overlay at ≤1100px. Hidden on desktop so its "Details / ×" chrome doesn't
+     double up with the always-visible sidebar-header-right. */
+  .mobile-panel-header { display: none; }
+
+  /* Tablet ≤1100px: right sidebar slides in as overlay */
+  @media (max-width: 1100px) {
+    /* Right sidebar: fixed viewport overlay, slides from right. Mobile (≤640px)
+       widens it to full viewport below. */
+    aside.right {
+      display: flex;
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 100%; max-width: 380px;
+      z-index: 200;
+      border-left: 1px solid var(--border);
+      transform: translateX(100%);
+      transition: transform .28s cubic-bezier(.4,0,.2,1);
+      overflow: hidden;
+    }
+    aside.right.mobile-open {
+      transform: translateX(0);
+    }
+    .mobile-panel-header {
+      display: flex;
+      align-items: center; justify-content: space-between;
+      padding: 0 var(--chrome-header-pr) 0 var(--chrome-header-pl);
+      height: var(--chrome-header-height);
+      min-height: var(--chrome-header-height);
+      box-sizing: border-box;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .mobile-panel-header .act-btn { width: 24px; height: 24px; }
+    .mobile-panel-header .act-btn svg { width: 14px; height: 14px; }
+    .sidebar-header-right { display: none; }
+
+    /* Show panel button in main header always shows on tablet (since right sidebar is an overlay) */
+    #btn-show-right[hidden] { display: flex !important; }
+    /* Override the desktop "collapse empty slot" rule (viewer.css) — the :has(…[hidden])
+       selector still sees the [hidden] attribute even while we override display above,
+       so the wrapper would otherwise swallow the button. */
+    #viewer-header-right-actions { display: flex !important; }
+
+    /* When the corresponding overlay is already open, hide the "open" affordance
+       in the viewer header so it doesn't read as duplicate chrome. Sidebars have
+       their own close buttons (mobile-panel-header / sidebar-header-left). */
+    .app:has(aside.right.mobile-open) #btn-show-right { display: none !important; }
+  }
+
+  /* Tablet portrait / large phone ≤820px:
+     - Tool groups (after the scrub row) become a horizontally scrollable rail.
+     - Scrub bar stays full width on its own row. Desktop untouched. */
+  @media (max-width: 820px) {
+    /* Activate the rail as a real flex item with its own horizontal scroll. */
+    .controls .tool-rail-wrap {
+      display: block;
+      position: relative;
+      flex: 1 1 0;
+      min-width: 0;
+      align-self: stretch;
+    }
+    .controls .tool-rail {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      overflow-y: visible;
+      padding: 0 14px;
+      height: 100%;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-behavior: smooth;
+    }
+    .controls .tool-rail::-webkit-scrollbar { display: none; }
+    .controls .tool-rail > * { flex-shrink: 0; }
+
+    /* Fades match the toolbar bg — visible when the rail can scroll further in that direction. */
+    .controls .tool-rail-wrap::before,
+    .controls .tool-rail-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 28px;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity .15s ease;
+    }
+    .controls .tool-rail-wrap::before {
+      left: 0;
+      background: linear-gradient(to right, var(--panel) 0%, var(--panel) 35%, rgba(0,0,0,0) 100%);
+    }
+    .controls .tool-rail-wrap::after {
+      right: 0;
+      background: linear-gradient(to left, var(--panel) 0%, var(--panel) 35%, rgba(0,0,0,0) 100%);
+    }
+    .controls .tool-rail-wrap.has-overflow-left::before { opacity: 1; }
+    .controls .tool-rail-wrap.has-overflow-right::after { opacity: 1; }
+
+    /* Normalize tool-group heights so the rail never grows rows that are taller than others.
+       Without this, .tool-group has padding: 2px but labeled buttons inside grew to 44px on
+       touch while other groups stayed at 30px + 2px chrome = 34px. */
+    .controls .tool-rail .tool-group { padding: 0 2px; }
+
+    /* Keep the after-scrub separator pinned to the left of the rail so scrolling
+       doesn't detach the rail from the scrub row visually. */
+    .controls .toolbar-sep--after-scrub { margin-right: 0; }
+
+    /* Hide the colormap dropdown label at this breakpoint to save rail width */
+    .controls [data-tg="display"] .dd-trigger { font-size: 11px; padding: 0 4px 0 6px; }
+
+    /* Edge-to-edge chrome on narrow layouts */
+    .viewer-header, .controls { padding-left: 12px; padding-right: 12px; }
+  }
+
+  /* Phone ≤640px: fullscreen sidebars, trimmed header, scrollable tool rail, hidden advanced tools */
+  @media (max-width: 640px) {
+    /* Left sidebar: fullscreen slide-in overlay */
+    aside.left {
+      display: flex;
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: 100vw; max-width: 100vw;
+      z-index: 200;
+      border-right: none;
+      transform: translateX(-100%);
+      transition: transform .28s cubic-bezier(.4,0,.2,1);
+    }
+    aside.left.mobile-open {
+      transform: translateX(0);
+    }
+
+    /* Right sidebar: fullscreen on phones */
+    aside.right {
+      width: 100vw;
+      max-width: 100vw;
+      border-left: none;
+    }
+
+    /* On phone, the built-in left sidebar button in the viewer header replaces the
+       collapsed-sidebar toggle — it's always available. */
+    #btn-show-left[hidden], #btn-show-right[hidden] {
+      display: flex !important;
+    }
+    .app:has(aside.left.mobile-open) #btn-show-left { display: none !important; }
+
+    /* Trim advanced actions from the main header — only screenshot + theme + sidebar toggles
+       remain. Keep header full-width edge-to-edge. */
+    .viewer-header .vh-advanced { display: none !important; }
+    .viewer-header {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    /* Hide sidebar search row (Cmd+K) — no keyboard palette on phone */
+    .mobile-hidden { display: none !important; }
+
+    /* Minimal toolbar: hide W/L presets + overlay opacity strip */
+    .controls #mr-presets,
+    .controls .overlay-opacity-wrap { display: none !important; }
+
+    /* Hide Compare + MPR in the views group — 3D stays (try-it feature) */
+    .controls [data-tg="views"] #cmp-dropdown,
+    .controls [data-tg="views"] #btn-mpr { display: none !important; }
+
+    /* Tighter toolbar padding, edge-to-edge */
+    .controls {
+      padding: 8px 0 10px;
+      gap: 0;
+      row-gap: 6px;
+    }
+    .controls .scrub-block { padding: 0 12px; }
+    .controls .toolbar-sep--after-scrub { display: none; }
+    .controls .tool-rail { padding: 0 12px; gap: 6px; }
+
+    /* Fade width: slightly wider so first/last items feel tucked rather than clipped */
+    .controls .tool-rail-wrap::before,
+    .controls .tool-rail-wrap::after {
+      width: 24px;
+    }
+
+    /* Scrub block: compact for phone */
+    .scrub-block { min-width: 0; gap: 8px; }
+    .cine-speed { display: none; }
+
+    /* Flyout toolboxes: icon-only (matches touch targets) */
+    .controls #toolbox-overlays .toolbox-panel .icon-btn.labeled span,
+    .controls #toolbox-measure .toolbox-panel .icon-btn.labeled span { display: none; }
+    .controls #toolbox-overlays .toolbox-panel .icon-btn.labeled,
+    .controls #toolbox-measure .toolbox-panel .icon-btn.labeled { width: 44px; height: 44px; padding: 0; }
+
+    /* View modes: icons only (only 3D remains on phone, but keep rule consistent) */
+    .controls [data-tg="views"] .icon-btn.labeled span { display: none; }
+    .controls [data-tg="views"] .icon-btn.labeled { width: 44px; height: 44px; padding: 0; border-radius: var(--radius-lg); }
+    /* Match the toolbox triggers (Tools, Overlays) to the views button so the bottom
+       bar reads as one row of same-shape targets at phone width — the @media (pointer:
+       coarse) block above only fires on real touch devices, leaving a narrow-fine-pointer
+       gap where views was 44 and the triggers stayed 30. */
+    .controls .tool-rail .toolbox-trigger { width: 44px; height: 44px; border-radius: var(--radius-lg); }
+    .controls .tool-rail .toolbox-trigger .ico { width: 18px; height: 18px; }
+
+    /* Modals: fit phone screens */
+    .ask-card { min-width: 0; width: calc(100vw - 32px); }
+    #annot-modal .ask-card { min-width: 0; }
+    .help-card { min-width: 0; width: calc(100vw - 32px); padding: 16px; }
+    .help-grid { grid-template-columns: 1fr; }
+  }

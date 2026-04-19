@@ -1,0 +1,42 @@
+# Python pipeline scripts — don't run on Vercel
+*.py
+__pycache__/
+.pytest_cache/
+
+# 16-bit raw volumes — served from R2, not Vercel.
+# EXCEPTION: *_preview.raw files are tiny (<1 MB) and MUST ship with
+# Vercel for instant 3D rendering before the full-res streams from R2.
+data/*.raw
+!data/*_preview.raw
+data/*_hr.json
+data/*_mask.raw
+
+# Python-only temp files and caches
+data/*_asks/
+data/*_asks.json
+
+# Hosted mode has no AI features — don't ship the generated observations
+# or the consolidated consult to Vercel at all.
+data/*_analysis.json
+data/consult.json
+
+# Secrets — .env holds R2 credentials used by the compress/upload
+# pipeline. Belongs only on the developer's local machine.
+.env
+.env.*
+
+# Compressed volume staging directory — uploaded to R2 separately,
+# never served by Vercel.
+data_compressed/
+
+# ML model weights + repos — only used by local Python pipelines
+synthseg_repo/
+*.h5
+*.pth
+*.onnx
+
+# Build artifacts + docs that don't ship
+README.md
+.git/
+.DS_Store
+*.log

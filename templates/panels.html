@@ -1,0 +1,186 @@
+<div class="sidebar-header sidebar-header-right">
+  <span class="sidebar-brand sidebar-brand-muted">Details</span>
+  <div class="sidebar-actions">
+    <button class="act-btn" id="btn-theme" data-tip="Toggle theme" data-tip-pos="left" aria-label="Toggle light/dark theme">
+      <svg id="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+      </svg>
+      <svg id="theme-icon-moon" class="theme-icon-hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+      </svg>
+    </button>
+    <button class="act-btn" id="btn-toggle-right" data-tip="Hide Panel" data-tip-pos="left" aria-label="Hide Panel">
+      <svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <line x1="15" y1="3" x2="15" y2="21"/>
+      </svg>
+    </button>
+  </div>
+</div>
+<div class="mobile-panel-header" id="mobile-panel-header">
+  <span class="sidebar-brand sidebar-brand-muted">Details</span>
+  <button class="act-btn" id="btn-close-panel" aria-label="Close panel">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+</div>
+
+<div class="right-panel-scroll">
+<div class="rp-section collapsible collapsed" data-panel="metadata">
+  <div class="sec-title"><span class="sec-title-text"><span>Metadata</span></span><span class="rp-collapse-ico" aria-hidden="true"><svg class="rp-collapse-svg"><use href="icons.svg#i-plus"/></svg></span></div>
+  <div class="rp-body">
+    <div class="rp-body-inner">
+    <div id="meta"></div>
+    <div class="histogram-block" id="histogram-block" hidden>
+      <!-- Single 52px-tall slot: canvas and empty state stack here to avoid layout jump when toggling. -->
+      <div class="histogram-slot">
+        <canvas id="histogram" class="histogram-canvas"></canvas>
+        <div id="histogram-empty" class="rp-empty rp-empty--compact histogram-empty" hidden>
+          <div class="rp-empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3v18h18"/><path d="M7 16V9"/><path d="M12 16v-5"/><path d="M17 16V6"/>
+            </svg>
+          </div>
+          <div class="rp-empty-title" id="histogram-empty-title">Slice histogram</div>
+          <div class="rp-empty-hint" id="histogram-empty-hint"></div>
+        </div>
+      </div>
+      <div class="histogram-note">
+        Intensity distribution of the current slice. The band shows the W/L window.
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<div class="rp-section collapsible collapsed" id="findings-panel" data-panel="findings" data-always-collapsed="true">
+  <div class="sec-title"><span class="sec-title-text"><span id="findings-title">AI Observations</span></span><span class="rp-collapse-ico" aria-hidden="true"><svg class="rp-collapse-svg"><use href="icons.svg#i-plus"/></svg></span></div>
+  <div class="rp-body"><div class="rp-body-inner" id="findings"></div></div>
+</div>
+
+<div class="rp-section collapsible collapsed panel-init-hidden" id="volumes-panel" data-panel="volumes">
+  <div class="sec-title"><span class="sec-title-text"><span>Tissue Volumes</span></span><span class="rp-collapse-ico" aria-hidden="true"><svg class="rp-collapse-svg"><use href="icons.svg#i-plus"/></svg></span></div>
+  <div class="rp-body"><div class="rp-body-inner" id="volumes"></div></div>
+</div>
+
+<div class="rp-section collapsible collapsed" data-panel="region-volumes">
+  <div class="sec-title"><span class="sec-title-text"><span>Regional Volumes</span><span class="info-tip tip-left sec-title-info info-tip--viewport" id="info-volumes" tabindex="0" data-info="Volumes computed from voxel counts x pixel spacing x slice thickness. Model source depends on series. Not for clinical diagnosis." aria-label="About regional volumes">&#x24D8;</span></span><span class="rp-collapse-ico" aria-hidden="true"><svg class="rp-collapse-svg"><use href="icons.svg#i-plus"/></svg></span></div>
+  <div class="rp-body">
+    <div class="rp-body-inner">
+    <div class="info-line" id="volumes-info-line"></div>
+    <div id="volume-table"></div>
+    </div>
+  </div>
+</div>
+
+<div class="rp-section collapsible collapsed panel-init-hidden" id="regions-panel" data-panel="regions">
+  <div class="sec-title"><span class="sec-title-text"><span>Anatomical Regions</span></span><span class="rp-collapse-ico" aria-hidden="true"><svg class="rp-collapse-svg"><use href="icons.svg#i-plus"/></svg></span></div>
+  <div class="rp-body"><div class="rp-body-inner" id="regions-legend"></div></div>
+</div>
+
+<div class="rp-section collapsible collapsed panel-init-hidden" id="fusion-panel" data-panel="fusion">
+  <div class="sec-title"><span class="sec-title-text"><span>Fusion Overlay</span></span><span class="rp-collapse-ico" aria-hidden="true"><svg class="rp-collapse-svg"><use href="icons.svg#i-plus"/></svg></span></div>
+  <div class="rp-body">
+    <div class="rp-body-inner">
+    <div class="fusion-panel-note">
+      Blend a co-registered series on top with a heat colormap
+    </div>
+    <select id="fusion-select" class="select-like">
+      <option value="">None</option>
+    </select>
+    <div class="tool-row fusion-opacity-row">
+      <span class="tl-lbl">Mix</span>
+      <div class="tl-sl"><input type="range" id="fusion-opacity" min="0" max="1" step="0.05" value="0.5" /></div>
+      <span class="tl-val" id="fusion-opacity-val">50%</span>
+    </div>
+    </div>
+  </div>
+</div>
+
+<div class="rp-section collapsible collapsed panel-init-hidden" id="annot-panel" data-panel="annotations">
+  <div class="sec-title"><span class="sec-title-text"><span>Annotations</span></span><span class="rp-collapse-ico" aria-hidden="true"><svg class="rp-collapse-svg"><use href="icons.svg#i-plus"/></svg></span></div>
+  <div class="rp-body"><div class="rp-body-inner" id="annot-list"></div></div>
+</div>
+
+<div class="rp-section" id="panel-3d" hidden>
+  <div class="sec-title">Volume</div>
+
+  <div class="pill-group" id="render-mode">
+    <div class="pill active" data-mode="alpha" data-tip="Alpha-compositing volume render">Volume</div>
+    <div class="pill" data-mode="mip" data-tip="Maximum intensity projection">MIP</div>
+    <div class="pill" data-mode="minip" data-tip="Minimum intensity projection">MinIP</div>
+  </div>
+
+  <div class="sec-subtitle" id="ct-window-title" hidden>CT Window Preset</div>
+  <div class="pill-group" id="ct-window" hidden>
+    <div class="pill" data-window="full" data-tip="Full range (HU -900 to +1500)">Full</div>
+    <div class="pill active" data-window="soft" data-tip="Soft tissue (HU -160 to +240)">Soft</div>
+    <div class="pill" data-window="lung" data-tip="Lung (HU -1350 to +150)">Lung</div>
+    <div class="pill" data-window="bone" data-tip="Bone (HU -450 to +1050)">Bone</div>
+  </div>
+
+  <div class="sec-subtitle">View</div>
+  <div class="view-preset-row">
+    <button class="preset-btn" data-view="reset" data-tip="Default oblique">Reset</button>
+    <button class="preset-btn" data-view="axial" data-tip="Superior (top-down)">Top</button>
+    <button class="preset-btn" data-view="bottom" data-tip="Inferior (bottom-up)">Bottom</button>
+    <button class="preset-btn" data-view="coronal" data-tip="Anterior (front)">Front</button>
+    <button class="preset-btn" data-view="back" data-tip="Posterior (back)">Back</button>
+    <button class="preset-btn" data-view="sagittal" data-tip="Left lateral">L</button>
+    <button class="preset-btn" data-view="right" data-tip="Right lateral">R</button>
+    <button class="preset-btn" data-view="flipH" data-tip="Flip left/right"><svg class="preset-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/><path d="M12 20v2"/><path d="M12 14v2"/><path d="M12 8v2"/><path d="M12 2v2"/></svg></button>
+    <button class="preset-btn" data-view="flipV" data-tip="Flip top/bottom"><svg class="preset-btn-icon preset-btn-icon-rotated" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h3"/><path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/><path d="M12 20v2"/><path d="M12 14v2"/><path d="M12 8v2"/><path d="M12 2v2"/></svg></button>
+  </div>
+
+  <div class="sec-subtitle">Transfer Function</div>
+  <div class="tool-row">
+    <span class="tl-lbl" data-tip="Minimum intensity threshold">Low</span>
+    <div class="tl-sl"><input type="range" id="s-low" min="0" max="1" step="0.01" value="0.08" /></div>
+    <span class="tl-val" id="readout-low">8%</span>
+  </div>
+  <div class="tool-row">
+    <span class="tl-lbl" data-tip="Maximum intensity threshold">High</span>
+    <div class="tl-sl"><input type="range" id="s-high" min="0" max="1" step="0.01" value="1.0" /></div>
+    <span class="tl-val" id="readout-high">100%</span>
+  </div>
+  <div class="tool-row">
+    <span class="tl-lbl" data-tip="Opacity multiplier">Opacity</span>
+    <div class="tl-sl"><input type="range" id="s-gain" min="0.2" max="4" step="0.05" value="1.6" /></div>
+    <span class="tl-val" id="readout-gain">1.60</span>
+  </div>
+
+  <div class="clip-group">
+    <div class="clip-head">Clip</div>
+    <div class="clip-pair">
+      <span class="axis">X</span>
+      <div class="tl-sl"><input type="range" id="s-xmin" min="0" max="1" step="0.01" value="0" /></div>
+      <div class="tl-sl"><input type="range" id="s-xmax" min="0" max="1" step="0.01" value="1" /></div>
+      <span class="tl-val" id="readout-clipx">0–100%</span>
+    </div>
+    <div class="clip-pair">
+      <span class="axis">Y</span>
+      <div class="tl-sl"><input type="range" id="s-ymin" min="0" max="1" step="0.01" value="0" /></div>
+      <div class="tl-sl"><input type="range" id="s-ymax" min="0" max="1" step="0.01" value="1" /></div>
+      <span class="tl-val" id="readout-clipy">0–100%</span>
+    </div>
+    <div class="clip-pair clip-pair--z">
+      <span class="axis">Z</span>
+      <div class="tl-sl clip-z-sl"><input type="range" id="s-zscrub" min="0" max="0" step="1" value="0" aria-label="Slice depth (Z clip)" /></div>
+      <span class="tl-val" id="readout-clipz">0–100%</span>
+    </div>
+  </div>
+
+  <div class="presets">
+    <button class="btn" id="preset-full">Full</button>
+    <button class="btn" id="preset-surface">Surface</button>
+    <button class="btn" id="preset-inside">Inside</button>
+    <button class="btn" id="preset-halfx">½ X</button>
+    <button class="btn" id="preset-halfy">½ Y</button>
+    <button class="btn" id="preset-reset">Reset</button>
+  </div>
+
+  <div id="label-list-wrap" hidden>
+    <div class="sec-subtitle label-list-title">Structures</div>
+    <div id="label-list" class="label-list"></div>
+  </div>
+</div>
+</div>

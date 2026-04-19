@@ -1,0 +1,6 @@
+{
+  "uploadExpirySeconds": 900,
+  "urls": {
+    "f000001": "https://uploads.example/uploads/abcdef12/f000001__IM0001?expires=900"
+  }
+}

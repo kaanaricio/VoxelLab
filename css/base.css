@@ -1,0 +1,460 @@
+  :root {
+    /* Clean neutral monochrome. No blue, no purple — color only in data
+       (segmentation, symmetry, finding severity tags). Chrome is grayscale. */
+    --bg:      #0a0a0a;
+    --panel:   #111111;
+    --elev:    #161616;
+    /* Colors */
+    --border:  #1e1e1e;
+    --hover:   #171717;
+    --text:    #f0f0f0;
+    --muted:   #7a7a7a;
+    --dim:     #3a3a3a;
+    --icon-idle: #6a6a6a;          /* resting icon color — visible but quiet, ≥4.5:1 on --bg */
+    --accent:  #f5f5f5;
+    --accent-bg: rgba(255,255,255,0.06);
+    --active-bg: rgba(255,255,255,0.08);
+    --danger:  #e57373;
+    --color-abnormal: #d67676;
+    --color-attention: #d4a72c;
+    --color-microbleed: #9b8fb0;
+    --tooltip-bg: #1a1a1a;
+    --tooltip-border: #2a2a2a;
+    --tooltip-text: #e0e0e0;
+
+    /* Radii */
+    --radius:  4px;
+    --radius-lg: 6px;
+
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --sidebar-px: 16px;         /* horizontal padding in sidebar items */
+    --sidebar-item-py: 8px;     /* vertical padding in sidebar items */
+
+    /* Sizing */
+    --icon-sm: 13px;            /* inline icons, menu items */
+    --icon-md: 16px;            /* sidebar action buttons */
+    --icon-lg: 15px;            /* toolbar buttons */
+    --btn-sidebar: 28px;        /* sidebar action button hit target */
+    --btn-toolbar: 30px;        /* toolbar button hit target */
+    /* Stroke width for circular range thumbs + .ui-checkbox rings — matches .scrubber slice slider */
+    --knob-border: 2px;
+    /* Right-rail sliders (volume transfer, clip X/Y/Z, fusion mix) + toolbar mini sliders (FPS, overlay opacity) */
+    --compact-range-thumb: 12px;
+
+    /* Top chrome strips: viewer header + sidebar rails + mobile panel bar */
+    --chrome-header-height: 45px;
+    --chrome-header-pl: 12px;   /* padding-inline-start */
+    --chrome-header-pr: 8px;    /* padding-inline-end */
+    /* Right panel sections: same horizontal inset as chrome + vertical rhythm */
+    --rail-section-padding: var(--space-md) var(--chrome-header-pr) var(--space-md) var(--chrome-header-pl);
+
+    /* Shadows */
+    --shadow-popover: 0 0 0 1px rgba(255,255,255,0.08), 0 4px 12px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.3);
+    --shadow-modal:   0 0 0 1px rgba(255,255,255,0.08), 0 8px 24px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.3);
+
+    /* Right rail typography hierarchy (see panels.css, sidebar.css aside.right) */
+    --rail-title: #a0a0a0;
+    --rail-label: #8a8a8a;
+    --rail-value: var(--text);
+    --rail-stat: #7c7c7c;
+    --rail-caption: #7a7a7a;
+    --rail-micro: #828282;
+
+    /* Shared interactive styles (applied via utility classes) */
+  }
+  html.light {
+    --bg:      #f0f0f0;
+    --panel:   #fafafa;
+    --elev:    #f0f0f0;
+    --border:  #e0e0e0;
+    --hover:   #ebebeb;
+    --text:    #1a1a1a;
+    --muted:   #777777;
+    --dim:     #c0c0c0;
+    --icon-idle: #666666;
+    --accent:  #1a1a1a;
+    --accent-bg: rgba(0,0,0,0.05);
+    --active-bg: rgba(0,0,0,0.07);
+    --danger:  #c62828;
+    --shadow-popover: 0 0 0 1px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.08);
+    --shadow-modal:   0 0 0 1px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.1), 0 16px 48px rgba(0,0,0,0.08);
+
+    --rail-title: #4a4a4a;
+    --rail-label: #5c5c5c;
+    --rail-value: var(--text);
+    --rail-stat: #666666;
+    --rail-caption: #757575;
+    --rail-micro: #6a6a6a;
+  }
+  /* Instant theme switch — no transition on color vars */
+  html.light-switching, html.light-switching * {
+    transition-duration: 0s !important;
+  }
+  /* Light-mode overrides for hardcoded dark values */
+  html.light ::selection { background: rgba(0,0,0,0.15); color: #000; }
+  html.light *:focus-visible {
+    box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgba(0,0,0,0.25);
+  }
+  /* Tooltips are always dark — no light-mode override needed */
+  html.light .ftag.note { background: rgba(0,0,0,0.04); }
+  /* MPR/compare area is always dark — identical to dark mode.
+     Pin grid bg, cell borders, and canvas-wrap so light-mode vars don't leak. */
+  html.light canvas#view { background: #000; }
+  html.light .mpr-cell, html.light .cmp-cell { background: #000; border-color: #1e1e1e; }
+  html.light .mpr-grid, html.light .cmp-grid { background: #000; }
+  html.light .canvas-wrap.mpr,
+  html.light .canvas-wrap.mpr3d,
+  html.light .canvas-wrap.cmp { background: #000; }
+  html.light .cmp-cell { border-color: var(--border); }
+  html.light .cmp-cell:hover { border-color: #aaa; }
+  html.light .cmp-cell.primary { border-color: #555; }
+  html.light .cmp-cell .cmp-lbl {
+    color: rgba(255,255,255,0.9);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  }
+  /* On-canvas overlays: light bg + dark text in light mode */
+  html.light .ov { background: rgba(255,255,255,0.75); color: #555; }
+  html.light .ov-num { color: rgba(0,0,0,0.5); }
+  html.light .ov-label { color: #888; }
+  html.light #zoom-badge { background: rgba(255,255,255,0.75); color: rgba(0,0,0,0.6); }
+  html.light .orient-marker { background: rgba(255,255,255,0.75); color: rgba(0,0,0,0.7); }
+  html.light #wl-overlay span { color: #888; }
+  html.light #wl-readout { color: rgba(0,0,0,0.55); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  ::selection { background: rgba(255,255,255,0.2); color: #fff; }
+  h1, h2, h3, .sec-title { text-wrap: balance; }
+  p, .f-text, .disclaimer, .ask-a { text-wrap: pretty; }
+
+  /* Design system: shared interactive patterns */
+
+  /* Custom checkbox — hollow ring + inner dot when checked. Row hover (label:hover) scales the knob + border hint. */
+  .ui-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .ui-checkbox-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 6px;
+    overflow: visible;
+  }
+  .ui-checkbox-input {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 1;
+  }
+  .ui-checkbox-box {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    pointer-events: none;
+    border: var(--knob-border) solid var(--muted);
+    background: transparent;
+    transition: border-color 0.1s, transform 0.12s ease-out;
+  }
+  /* Centered dot — translate(-50%,-50%) keeps it optically centered in the ring */
+  .ui-checkbox-box::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text);
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.35);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    pointer-events: none;
+  }
+  .ui-checkbox-input:checked + .ui-checkbox-box {
+    border-color: var(--text);
+    background: transparent;
+  }
+  .ui-checkbox-input:checked + .ui-checkbox-box::after {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  /* Scale when hovering anywhere on the label row (not only the knob hit area) */
+  .ui-checkbox:hover .ui-checkbox-box {
+    transform: scale(1.25);
+  }
+  .ui-checkbox:hover .ui-checkbox-input:not(:checked) + .ui-checkbox-box {
+    border-color: var(--text);
+  }
+  .ui-checkbox-input:focus-visible + .ui-checkbox-box {
+    outline: 2px solid var(--dim);
+    outline-offset: 2px;
+  }
+  html.light .ui-checkbox-input:focus-visible + .ui-checkbox-box {
+    outline-color: rgba(0, 0, 0, 0.35);
+  }
+  .ui-checkbox-input:disabled + .ui-checkbox-box {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  /* Small action button (sidebar headers, inline actions) */
+  .act-btn {
+    background: transparent; border: none; cursor: pointer;
+    color: var(--icon-idle);
+    width: var(--btn-sidebar); height: var(--btn-sidebar);
+    border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    transition: color .08s, background .08s, opacity .08s;
+    padding: 0; flex-shrink: 0; position: relative;
+  }
+  .act-btn:hover { color: var(--text); background: var(--hover); }
+  .act-btn:active { opacity: 0.7; }
+  .act-btn svg { width: var(--icon-md); height: var(--icon-md); }
+
+  /* Popover menu (folder context, sort, etc.) */
+  .popover-menu {
+    position: absolute; z-index: 300;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 0; overflow: hidden;
+    min-width: 140px;
+    box-shadow: var(--shadow-popover);
+  }
+  .popover-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 12px; font-size: 11px; color: var(--text);
+    cursor: pointer; white-space: nowrap;
+    transition: background .08s;
+  }
+  .popover-item:hover { background: var(--hover); }
+  .popover-item.danger { color: var(--danger); }
+  .popover-item.danger:hover { background: rgba(229,115,115,0.08); }
+  .popover-item svg { width: var(--icon-sm); height: var(--icon-sm); flex-shrink: 0; }
+  .popover-item .popover-check {
+    margin-left: auto; width: 13px; height: 13px; flex-shrink: 0;
+  }
+  html, body {
+    height: 100%; overflow: hidden;
+    background: var(--bg); color: var(--text);
+    font: 13px/1.45 -apple-system, "SF Pro Text", "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color .2s .3s;
+  }
+  :hover {
+    scrollbar-color: var(--dim) transparent;
+  }
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: transparent; border-radius: 3px;
+    transition: background .2s .3s;
+  }
+  :hover::-webkit-scrollbar-thumb { background: var(--dim); }
+  :hover::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  /* Shared fade — studies rail, skeleton bars, orientation labels (0.38s matches js/projects-sidebar) */
+  @keyframes ui-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes ui-fade-in-muted {
+    from { opacity: 0; }
+    to { opacity: 0.85; }
+  }
+  .ui-fade-in {
+    animation: ui-fade-in 0.38s ease forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ui-fade-in {
+      animation: none !important;
+    }
+    /* Suppress decorative hover scales on range thumbs and the custom checkbox knob.
+       Interactive color/background feedback is preserved — only the enlarge-on-hover is dropped. */
+    .scrubber input[type=range]::-webkit-slider-thumb:hover,
+    .scrubber input[type=range]::-webkit-slider-thumb:active,
+    .cine-speed input[type=range]:hover::-webkit-slider-thumb,
+    .overlay-opacity-wrap input[type=range]:hover::-webkit-slider-thumb,
+    aside.right input[type=range]:hover::-webkit-slider-thumb,
+    .ui-checkbox:hover .ui-checkbox-box,
+    .icon-btn:active:not(:disabled),
+    .btn:active:not(:disabled) {
+      transform: none !important;
+    }
+  }
+
+  /* layout */
+  .app { display: grid; grid-template-columns: 208px 1fr 312px; height: 100vh; }
+  /* Grid items default to min-height:auto (content-sized). Without this, tall
+     right-panel content grows the row past 100vh and shoves the main column. */
+  .app > * {
+    min-height: 0;
+    min-width: 0;
+  }
+  /* Desktop-only collapse: the mobile breakpoint turns sidebars into position:fixed
+     overlays, and collapse has no meaning there. Scoping these to desktop widths
+     prevents the zero-width rule from conflicting with the mobile overlay width. */
+  @media (min-width: 1101px) {
+    .app.left-collapsed  { grid-template-columns: 0px 1fr 312px; }
+    .app.right-collapsed { grid-template-columns: 208px 1fr 0px; }
+    .app.left-collapsed.right-collapsed { grid-template-columns: 0px 1fr 0px; }
+    .app.left-collapsed  aside.left  { overflow: hidden; width: 0; min-width: 0; border: none; }
+    .app.right-collapsed aside.right { overflow: hidden; width: 0; min-width: 0; border: none; }
+  }
+  /* 641–1100: left column still fits at 208px; only left-collapsed applies. */
+  @media (max-width: 1100px) and (min-width: 641px) {
+    .app.left-collapsed { grid-template-columns: 0px 1fr; }
+    .app.left-collapsed aside.left { overflow: hidden; width: 0; min-width: 0; border: none; }
+  }
+
+  /* Before module JS runs: same layout as .left-collapsed / .right-collapsed (see index.html + shell-layout-toggles.js). */
+  @media (min-width: 1101px) {
+    html[data-shell-left-collapsed="true"] .app {
+      grid-template-columns: 0px 1fr 312px;
+    }
+    html[data-shell-right-collapsed="true"] .app {
+      grid-template-columns: 208px 1fr 0px;
+    }
+    html[data-shell-left-collapsed="true"][data-shell-right-collapsed="true"] .app {
+      grid-template-columns: 0px 1fr 0px;
+    }
+    html[data-shell-left-collapsed="true"] .app aside.left {
+      overflow: hidden; width: 0; min-width: 0; border: none;
+    }
+    html[data-shell-right-collapsed="true"] .app aside.right {
+      overflow: hidden; width: 0; min-width: 0; border: none;
+    }
+  }
+
+  /* Global focus-visible ring — double-ring (gap between element and ring) */
+  *:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgba(255,255,255,0.4);
+  }
+  /* Windows High-Contrast / forced-colors: box-shadow rings don't render, so fall back to a real outline. */
+  @media (forced-colors: active) {
+    *:focus-visible {
+      outline: 2px solid CanvasText;
+      outline-offset: 2px;
+      box-shadow: none;
+    }
+  }
+
+  [hidden] { display: none !important; }
+
+  /* Notifications */
+  /* Notification container */
+  #notify-container {
+    position: fixed; bottom: 16px; right: 16px;
+    display: flex; flex-direction: column-reverse; gap: 8px;
+    z-index: 800; pointer-events: none; max-width: 380px;
+  }
+
+  /* Dialog body helpers (used in showDialog innerHTML) */
+  .dlg-body { font-size: 13px; color: var(--text); }
+  .dlg-body-err { font-size: 13px; color: var(--color-abnormal); }
+  .dlg-sub { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .dlg-sub-spaced { font-size: 13px; color: var(--text); margin-bottom: 14px; }
+  .dlg-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .dlg-label {
+    font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+
+  .notify-item {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 10px 14px;
+    font: 12px/1.45 system-ui, -apple-system, sans-serif;
+    color: var(--text); pointer-events: auto;
+    box-shadow: var(--shadow-popover);
+    animation: notify-in 0.2s ease-out;
+    transition: opacity 0.2s, transform 0.2s;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .notify-item.exiting { opacity: 0; transform: translateX(20px); }
+  .notify-item.shake { animation: notify-shake 0.3s ease-out; }
+  .notify-body { flex: 1; min-width: 0; }
+  .notify-text { margin-bottom: 0; }
+  .notify-text.has-cmd { margin-bottom: 8px; }
+  .notify-dismiss {
+    background: transparent; border: none; cursor: pointer;
+    color: var(--icon-idle); padding: 0; flex-shrink: 0;
+    width: 24px; height: 24px; font-size: 14px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius);
+    transition: color .08s, background .08s;
+    position: relative;
+  }
+  /* Extend hit area to 36x36 without enlarging the visible glyph */
+  .notify-dismiss::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+  .notify-dismiss:hover { color: var(--text); background: var(--hover); }
+  .notify-cmd {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--elev); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 6px 8px;
+  }
+  .notify-cmd code {
+    flex: 1; font: 11px/1.4 'SF Mono', Monaco, monospace;
+    color: var(--text); word-break: break-all; user-select: all;
+  }
+  .notify-copy {
+    background: var(--hover); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--muted);
+    padding: 3px 8px; font-size: 11px; cursor: pointer;
+    white-space: nowrap; font-family: inherit;
+    transition: background .08s;
+  }
+  .notify-copy.copied { background: rgba(74, 222, 128, 0.15); color: var(--text); }
+  .notify-progress {
+    margin-top: 6px; height: 2px; background: var(--dim);
+    border-radius: 1px; overflow: hidden;
+  }
+  .notify-progress-bar {
+    height: 100%; background: var(--muted); width: 30%;
+    animation: notify-progress 1.5s ease-in-out infinite;
+  }
+  @keyframes notify-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes notify-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-2px); }
+    80% { transform: translateX(2px); }
+  }
+  @keyframes notify-progress {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(200%); }
+    100% { transform: translateX(-100%); }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
