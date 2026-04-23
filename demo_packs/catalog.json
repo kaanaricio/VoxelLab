@@ -1,0 +1,181 @@
+{
+  "version": 1,
+  "defaultMode": "lite",
+  "modes": {
+    "none": [],
+    "lite": [
+      "lite"
+    ],
+    "standard": [
+      "lite",
+      "mri-source"
+    ],
+    "full": [
+      "lite",
+      "mri-source",
+      "ct-source"
+    ]
+  },
+  "packs": [
+    {
+      "id": "lite",
+      "title": "Lite Demo Pack",
+      "kind": "artifact",
+      "capability_intent": "volume-demo",
+      "modalities": [
+        "MR"
+      ],
+      "default_selected": true,
+      "estimated_size_mb": 44,
+      "license_note": "Derived from OpenNeuro ds005752 subject sub-ON01802 (CC0).",
+      "install_mode": "mirror",
+      "source_url": "https://raw.githubusercontent.com/OpenNeuroDatasets/ds005752/main/dataset_description.json",
+      "checksum": "84fa3c771a074df13417cfe34155568af8984354847885caccb6a1b279394402",
+      "requires_ai": false,
+      "public_safe": true,
+      "archive_path": "demo_packs/voxellab-lite-openneuro-on01802.zip",
+      "attribution": {
+        "title": "The NIMH Healthy Research Volunteer Dataset",
+        "doi": "doi:10.18112/openneuro.ds005752.v2.1.0",
+        "license": "CC0",
+        "subject": "sub-ON01802",
+        "session": "ses-01"
+      }
+    },
+    {
+      "id": "mri-source",
+      "title": "MRI Source Files",
+      "kind": "source",
+      "capability_intent": "volume-demo",
+      "modalities": [
+        "MR"
+      ],
+      "default_selected": false,
+      "estimated_size_mb": 62,
+      "license_note": "OpenNeuro ds005752 subject sub-ON01802 (CC0).",
+      "install_mode": "mirror",
+      "source_url": "https://s3.amazonaws.com/openneuro.org/ds005752/",
+      "checksum": "",
+      "requires_ai": false,
+      "public_safe": true,
+      "target_dir": "demo_sources/openneuro_on01802",
+      "files": [
+        {
+          "url": "https://s3.amazonaws.com/openneuro.org/ds005752/sub-ON01802/ses-01/anat/sub-ON01802_ses-01_acq-MPRAGE_T1w.nii.gz",
+          "path": "sub-ON01802/ses-01/anat/sub-ON01802_ses-01_acq-MPRAGE_T1w.nii.gz",
+          "sha256": "705d4bdb06c0d2a6cf669ab1cea4154a1df31deef0507e96f40d3d26e53c8393"
+        },
+        {
+          "url": "https://s3.amazonaws.com/openneuro.org/ds005752/sub-ON01802/ses-01/anat/sub-ON01802_ses-01_acq-MPRAGE_T1w.json",
+          "path": "sub-ON01802/ses-01/anat/sub-ON01802_ses-01_acq-MPRAGE_T1w.json",
+          "sha256": "168cb029d07d114502ef0be0c3afaacaad2297d2771d1b89b9c7f91b6a3e4106"
+        },
+        {
+          "url": "https://s3.amazonaws.com/openneuro.org/ds005752/sub-ON01802/ses-01/anat/sub-ON01802_ses-01_acq-CUBE_T2w.nii.gz",
+          "path": "sub-ON01802/ses-01/anat/sub-ON01802_ses-01_acq-CUBE_T2w.nii.gz",
+          "sha256": "2d76f3b412e9dab2a867f7b7cbbb0566425a7b92e7f1c1468818c3f5582041cb"
+        },
+        {
+          "url": "https://s3.amazonaws.com/openneuro.org/ds005752/sub-ON01802/ses-01/anat/sub-ON01802_ses-01_acq-CUBE_T2w.json",
+          "path": "sub-ON01802/ses-01/anat/sub-ON01802_ses-01_acq-CUBE_T2w.json",
+          "sha256": "5c87d0cc256b62d518561333bc0fafd51450d30647cd900ac5b4b2f03213970f"
+        },
+        {
+          "url": "https://s3.amazonaws.com/openneuro.org/ds005752/sub-ON01802/ses-01/anat/sub-ON01802_ses-01_acq-2dADNI2_rec-SCIC_FLAIR.nii.gz",
+          "path": "sub-ON01802/ses-01/anat/sub-ON01802_ses-01_acq-2dADNI2_rec-SCIC_FLAIR.nii.gz",
+          "sha256": "289eeb8e110083d47d3127888d684565923de0abe483aac94a3c1c4898044fbb"
+        },
+        {
+          "url": "https://s3.amazonaws.com/openneuro.org/ds005752/sub-ON01802/ses-01/anat/sub-ON01802_ses-01_acq-2dADNI2_rec-SCIC_FLAIR.json",
+          "path": "sub-ON01802/ses-01/anat/sub-ON01802_ses-01_acq-2dADNI2_rec-SCIC_FLAIR.json",
+          "sha256": "d26d33c0dfc1fc513af2d8f0fa7266a1de6d6e4c543ff14810b33122c76f9768"
+        },
+        {
+          "url": "https://s3.amazonaws.com/openneuro.org/ds005752/sub-ON01802/ses-01/anat/sub-ON01802_ses-01_rec-SCIC_T2starw.nii.gz",
+          "path": "sub-ON01802/ses-01/anat/sub-ON01802_ses-01_rec-SCIC_T2starw.nii.gz",
+          "sha256": "6d8b15ef14bbb8c7ce5312924d7b1f339a1f939c04ff11ddf4e7d86fc76dd497"
+        },
+        {
+          "url": "https://s3.amazonaws.com/openneuro.org/ds005752/sub-ON01802/ses-01/anat/sub-ON01802_ses-01_rec-SCIC_T2starw.json",
+          "path": "sub-ON01802/ses-01/anat/sub-ON01802_ses-01_rec-SCIC_T2starw.json",
+          "sha256": "18a5b573bc21c41fff98c76299bd11cf0bf4f5dd8a761e9be01b3e6368c49573"
+        },
+        {
+          "url": "https://s3.amazonaws.com/openneuro.org/ds005752/sub-ON01802/ses-01/dwi/sub-ON01802_ses-01_dir-unflipped_dwi.nii.gz",
+          "path": "sub-ON01802/ses-01/dwi/sub-ON01802_ses-01_dir-unflipped_dwi.nii.gz",
+          "sha256": "c22efa487eaf32f8e944bb2958590e92a78c30bb8861046a58db8520c96668f6"
+        },
+        {
+          "url": "https://s3.amazonaws.com/openneuro.org/ds005752/sub-ON01802/ses-01/dwi/sub-ON01802_ses-01_dir-unflipped_dwi.json",
+          "path": "sub-ON01802/ses-01/dwi/sub-ON01802_ses-01_dir-unflipped_dwi.json",
+          "sha256": "947cf4fac39eb6cf6cdce1470c0b845fa86581cef1e4eae7febe76fc48ebbc98"
+        },
+        {
+          "url": "https://s3.amazonaws.com/openneuro.org/ds005752/sub-ON01802/ses-01/dwi/sub-ON01802_ses-01_dir-unflipped_dwi.bval",
+          "path": "sub-ON01802/ses-01/dwi/sub-ON01802_ses-01_dir-unflipped_dwi.bval",
+          "sha256": "464fc9b109ed52b76c3f69929ad0194f844c811a49504eae5692f3b506e60f16"
+        },
+        {
+          "url": "https://s3.amazonaws.com/openneuro.org/ds005752/sub-ON01802/ses-01/dwi/sub-ON01802_ses-01_dir-unflipped_dwi.bvec",
+          "path": "sub-ON01802/ses-01/dwi/sub-ON01802_ses-01_dir-unflipped_dwi.bvec",
+          "sha256": "8a30f5a0e22f5b0fe930ffa22bbf3184eb5c46383cd0baa6e8a770d926822aef"
+        }
+      ],
+      "attribution": {
+        "title": "The NIMH Healthy Research Volunteer Dataset",
+        "doi": "doi:10.18112/openneuro.ds005752.v2.1.0",
+        "license": "CC0",
+        "subject": "sub-ON01802",
+        "session": "ses-01"
+      }
+    },
+    {
+      "id": "ct-source",
+      "title": "CT Source Files",
+      "kind": "source",
+      "capability_intent": "volume-demo",
+      "modalities": [
+        "CT"
+      ],
+      "default_selected": false,
+      "estimated_size_mb": 291,
+      "license_note": "TCIA Pancreas-CT curated subset (CC BY 3.0, attribution required).",
+      "install_mode": "mirror",
+      "source_url": "https://services.cancerimagingarchive.net/nbia-api/services/v1/getSeries?Collection=Pancreas-CT&Modality=CT&format=json",
+      "checksum": "",
+      "requires_ai": false,
+      "public_safe": true,
+      "target_dir": "demo_sources/pancreas_ct_subset",
+      "series_zips": [
+        {
+          "patient_id": "PANCREAS_0080",
+          "series_uid": "1.2.826.0.1.3680043.2.1125.1.41202274843063370955090296887703130",
+          "url": "https://services.cancerimagingarchive.net/nbia-api/services/v1/getImage?SeriesInstanceUID=1.2.826.0.1.3680043.2.1125.1.41202274843063370955090296887703130",
+          "sha256": "ab45a69a4b7703fe557f0b2366544a0d9a3023c38c6e84f223115b046cc4cac3"
+        },
+        {
+          "patient_id": "PANCREAS_0051",
+          "series_uid": "1.2.826.0.1.3680043.2.1125.1.77419915248783746629465382576486048",
+          "url": "https://services.cancerimagingarchive.net/nbia-api/services/v1/getImage?SeriesInstanceUID=1.2.826.0.1.3680043.2.1125.1.77419915248783746629465382576486048",
+          "sha256": "718d08947931ac5a12eb2a060922848224ba2c462c80288d01b9b89efef6f80e"
+        },
+        {
+          "patient_id": "PANCREAS_0013",
+          "series_uid": "1.2.826.0.1.3680043.2.1125.1.78610388862462472334572127709527599",
+          "url": "https://services.cancerimagingarchive.net/nbia-api/services/v1/getImage?SeriesInstanceUID=1.2.826.0.1.3680043.2.1125.1.78610388862462472334572127709527599",
+          "sha256": "415fc8d3021ef80db75d66ccf3442131d506d29a9bdf01b55056263dfc255f1b"
+        }
+      ],
+      "attribution": {
+        "title": "Pancreas-CT",
+        "doi": "https://doi.org/10.7937/K9/TCIA.2016.tNB1kqBU",
+        "license": "CC BY 3.0",
+        "patients": [
+          "PANCREAS_0080",
+          "PANCREAS_0051",
+          "PANCREAS_0013"
+        ]
+      }
+    }
+  ]
+}

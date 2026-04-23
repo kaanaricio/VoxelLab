@@ -1,0 +1,58 @@
+# Node (dev-only: ESLint)
+node_modules/
+
+# Vercel
+.vercel
+
+# Secrets
+.env
+.env.*
+!.env.example
+config.local.json
+
+# Large binary data — stored on R2, not in git
+data/*.raw
+data/*_mask.raw
+data_compressed/
+
+# Patient imaging data — never commit to git
+data/*/
+data/*_analysis.json
+data/*_asks.json
+data/*_context.json
+data/*_regions.json
+data/*_stats.json
+data/*_hr.json
+data/consult.json
+data/registration.json
+
+# ML model weights + repos
+synthseg_repo/
+*.h5
+*.pth
+*.onnx
+*.pt
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+/tmp/
+
+# Test artifacts
+test-results/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local Codex scratch artifacts
+.codex-*.diff
+.claude/
+
+# Venvs
+.venv/
+/tsenv/
+/synthseg_env/
+synthseg_repo/

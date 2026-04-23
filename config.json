@@ -1,0 +1,10 @@
+{
+  "modalWebhookBase": "",
+  "r2PublicUrl": "",
+  "siteName": "VoxelLab",
+  "disclaimer": "Not for clinical use. For research and educational purposes only.",
+  "features": {
+    "cloudProcessing": false,
+    "aiAnalysis": true
+  }
+}

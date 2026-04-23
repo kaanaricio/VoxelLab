@@ -1,0 +1,10 @@
+{
+  "modalWebhookBase": "",
+  "r2PublicUrl": "",
+  "siteName": "Fixture Viewer",
+  "disclaimer": "Not for clinical use.",
+  "features": {
+    "cloudProcessing": false,
+    "aiAnalysis": false
+  }
+}

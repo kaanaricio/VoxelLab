@@ -1,0 +1,374 @@
+{
+  "sharedContract": {
+    "dot3": [
+      {
+        "id": "mixed-sign",
+        "a": [1, 2, 3],
+        "b": [4, -5, 6],
+        "expected": 12
+      }
+    ],
+    "cross3": [
+      {
+        "id": "basis-cross",
+        "a": [1, 0, 0],
+        "b": [0, 1, 0],
+        "expected": [0, 0, 1]
+      }
+    ],
+    "norm3": [
+      {
+        "id": "three-four-twelve",
+        "v": [3, 4, 12],
+        "expected": 13
+      }
+    ],
+    "normalize3": [
+      {
+        "id": "axis-scale",
+        "v": [0, 3, 4],
+        "expected": [0, 0.6, 0.8]
+      }
+    ],
+    "sliceNormalFromIOP": [
+      {
+        "id": "axial",
+        "iop": [1, 0, 0, 0, 1, 0],
+        "expected": [0, 0, 1]
+      },
+      {
+        "id": "sagittal",
+        "iop": [0, 1, 0, 0, 0, 1],
+        "expected": [1, 0, 0]
+      }
+    ],
+    "projectionAlongNormal": [
+      {
+        "id": "axial-z",
+        "meta": {
+          "ImagePositionPatient": [0, 0, 7]
+        },
+        "normal": [0, 0, 1],
+        "expected": 7
+      }
+    ],
+    "sortDatasetsSpatially": [
+      {
+        "id": "scrambled-axial-stack",
+        "datasets": [
+          {
+            "InstanceNumber": 3,
+            "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+            "ImagePositionPatient": [0, 0, 2]
+          },
+          {
+            "InstanceNumber": 1,
+            "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+            "ImagePositionPatient": [0, 0, 0]
+          },
+          {
+            "InstanceNumber": 2,
+            "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+            "ImagePositionPatient": [0, 0, 1]
+          }
+        ],
+        "expectedInstanceOrder": [1, 2, 3]
+      }
+    ],
+    "sliceSpacingStatsFromPositions": [
+      {
+        "id": "regular",
+        "positions": [[0, 0, 0], [0, 0, 1], [0, 0, 2]],
+        "normal": [0, 0, 1],
+        "expected": { "mean": 1, "min": 1, "max": 1, "regular": true }
+      },
+      {
+        "id": "irregular",
+        "positions": [[0, 0, 0], [0, 0, 1], [0, 0, 3]],
+        "normal": [0, 0, 1],
+        "expected": { "mean": 1.5, "min": 1, "max": 2, "regular": false }
+      }
+    ],
+    "classifyGeometryKind": [
+      {
+        "id": "volume",
+        "spacingStats": { "mean": 1, "regular": true },
+        "sliceCount": 3,
+        "expected": "cartesian_volume"
+      },
+      {
+        "id": "irregular-stack",
+        "spacingStats": { "mean": 1, "regular": false },
+        "sliceCount": 3,
+        "expected": "cartesian_stack_irregular"
+      },
+      {
+        "id": "single-frame",
+        "spacingStats": { "mean": 0, "regular": false },
+        "sliceCount": 1,
+        "expected": "single_frame"
+      },
+      {
+        "id": "insufficient",
+        "spacingStats": { "mean": 0, "regular": false },
+        "sliceCount": 0,
+        "expected": "insufficient"
+      }
+    ],
+    "affineLpsFromSeries": [
+      {
+        "id": "axial-spacing",
+        "series": {
+          "pixelSpacing": [0.8, 0.7],
+          "sliceSpacing": 1.5,
+          "slices": 3,
+          "firstIPP": [10, 20, 30],
+          "lastIPP": [10, 20, 33],
+          "orientation": [1, 0, 0, 0, 1, 0]
+        },
+        "expected": [
+          [0.7, 0, 0, 10],
+          [0, 0.8, 0, 20],
+          [0, 0, 1.5, 30],
+          [0, 0, 0, 1]
+        ]
+      }
+    ],
+    "compareGroup": [
+      {
+        "id": "for-uid",
+        "series": { "frameOfReferenceUID": "1.2.840" },
+        "expected": "for:1.2.840"
+      },
+      {
+        "id": "for-uid-trim",
+        "series": { "frameOfReferenceUID": " 1.2.840 " },
+        "expected": "for:1.2.840"
+      },
+      {
+        "id": "fallback",
+        "series": {
+          "firstIPP": [0, 0, 0],
+          "orientation": [1, 0, 0, 0, 1, 0]
+        },
+        "expectedPrefix": "fallback:"
+      }
+    ],
+    "buildGeometryRecord": [
+      {
+        "id": "axial_ct_regular",
+        "description": "Standard axial CT/MR with regular 1mm slice spacing",
+        "input": {
+          "width": 256,
+          "height": 256,
+          "metas": [
+            {
+              "InstanceNumber": 1,
+              "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+              "ImagePositionPatient": [0, 0, 0],
+              "PixelSpacing": [0.5, 0.5],
+              "SliceThickness": 1.0,
+              "FrameOfReferenceUID": "1.2.840.12345"
+            },
+            {
+              "InstanceNumber": 2,
+              "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+              "ImagePositionPatient": [0, 0, 1],
+              "PixelSpacing": [0.5, 0.5],
+              "SliceThickness": 1.0,
+              "FrameOfReferenceUID": "1.2.840.12345"
+            },
+            {
+              "InstanceNumber": 3,
+              "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+              "ImagePositionPatient": [0, 0, 2],
+              "PixelSpacing": [0.5, 0.5],
+              "SliceThickness": 1.0,
+              "FrameOfReferenceUID": "1.2.840.12345"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "cartesian_volume",
+          "dimensions": { "width": 256, "height": 256, "depth": 3 },
+          "spacingMm": { "row": 0.5, "col": 0.5, "slice": 1.0 },
+          "sliceSpacingStatsMm": { "mean": 1.0, "min": 1.0, "max": 1.0, "regular": true },
+          "orientation": [1, 0, 0, 0, 1, 0],
+          "firstIPP": [0, 0, 0],
+          "lastIPP": [0, 0, 2],
+          "affineLps": [[0.5, 0, 0, 0], [0, 0.5, 0, 0], [0, 0, 1.0, 0], [0, 0, 0, 1]],
+          "frameOfReferenceUID": "1.2.840.12345",
+          "source": "dicom_classic_singleframe"
+        }
+      },
+      {
+        "id": "irregular_spacing",
+        "description": "Axial CT/MR with irregular slice spacing",
+        "input": {
+          "width": 512,
+          "height": 512,
+          "metas": [
+            {
+              "InstanceNumber": 1,
+              "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+              "ImagePositionPatient": [0, 0, 0],
+              "PixelSpacing": [0.8, 0.7],
+              "SliceThickness": 1.0,
+              "FrameOfReferenceUID": "1.2.3"
+            },
+            {
+              "InstanceNumber": 2,
+              "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+              "ImagePositionPatient": [0, 0, 1],
+              "PixelSpacing": [0.8, 0.7],
+              "SliceThickness": 1.0,
+              "FrameOfReferenceUID": "1.2.3"
+            },
+            {
+              "InstanceNumber": 3,
+              "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+              "ImagePositionPatient": [0, 0, 3],
+              "PixelSpacing": [0.8, 0.7],
+              "SliceThickness": 1.0,
+              "FrameOfReferenceUID": "1.2.3"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "cartesian_stack_irregular",
+          "dimensions": { "width": 512, "height": 512, "depth": 3 },
+          "spacingMm": { "row": 0.8, "col": 0.7, "slice": 1.5 },
+          "sliceSpacingStatsMm": { "mean": 1.5, "min": 1.0, "max": 2.0, "regular": false },
+          "orientation": [1, 0, 0, 0, 1, 0],
+          "firstIPP": [0, 0, 0],
+          "lastIPP": [0, 0, 3],
+          "affineLps": [[0.7, 0, 0, 0], [0, 0.8, 0, 0], [0, 0, 1.5, 0], [0, 0, 0, 1]],
+          "frameOfReferenceUID": "1.2.3",
+          "source": "dicom_classic_singleframe"
+        }
+      },
+      {
+        "id": "single_slice",
+        "description": "Single axial slice",
+        "input": {
+          "width": 512,
+          "height": 512,
+          "metas": [
+            {
+              "InstanceNumber": 1,
+              "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+              "ImagePositionPatient": [-128, -128, 0],
+              "PixelSpacing": [0.5, 0.5],
+              "SliceThickness": 5.0,
+              "FrameOfReferenceUID": "1.2.840.999"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "single_frame",
+          "dimensions": { "width": 512, "height": 512, "depth": 1 },
+          "spacingMm": { "row": 0.5, "col": 0.5, "slice": 5.0 },
+          "sliceSpacingStatsMm": { "mean": 0, "min": 0, "max": 0, "regular": false },
+          "orientation": [1, 0, 0, 0, 1, 0],
+          "firstIPP": [-128, -128, 0],
+          "lastIPP": [-128, -128, 0],
+          "affineLps": [[0.5, 0, 0, -128], [0, 0.5, 0, -128], [0, 0, 5.0, 0], [0, 0, 0, 1]],
+          "frameOfReferenceUID": "1.2.840.999",
+          "source": "dicom_classic_singleframe"
+        }
+      },
+      {
+        "id": "sagittal_mr",
+        "description": "Sagittal MR with regular 1mm spacing",
+        "input": {
+          "width": 256,
+          "height": 256,
+          "metas": [
+            {
+              "InstanceNumber": 1,
+              "ImageOrientationPatient": [0, 1, 0, 0, 0, 1],
+              "ImagePositionPatient": [0, 0, 0],
+              "PixelSpacing": [0.4, 0.4],
+              "SliceThickness": 1.0,
+              "FrameOfReferenceUID": "1.2.840.54321"
+            },
+            {
+              "InstanceNumber": 2,
+              "ImageOrientationPatient": [0, 1, 0, 0, 0, 1],
+              "ImagePositionPatient": [1, 0, 0],
+              "PixelSpacing": [0.4, 0.4],
+              "SliceThickness": 1.0,
+              "FrameOfReferenceUID": "1.2.840.54321"
+            },
+            {
+              "InstanceNumber": 3,
+              "ImageOrientationPatient": [0, 1, 0, 0, 0, 1],
+              "ImagePositionPatient": [2, 0, 0],
+              "PixelSpacing": [0.4, 0.4],
+              "SliceThickness": 1.0,
+              "FrameOfReferenceUID": "1.2.840.54321"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "cartesian_volume",
+          "dimensions": { "width": 256, "height": 256, "depth": 3 },
+          "spacingMm": { "row": 0.4, "col": 0.4, "slice": 1.0 },
+          "sliceSpacingStatsMm": { "mean": 1.0, "min": 1.0, "max": 1.0, "regular": true },
+          "orientation": [0, 1, 0, 0, 0, 1],
+          "firstIPP": [0, 0, 0],
+          "lastIPP": [2, 0, 0],
+          "affineLps": [[0, 0, 1.0, 0], [0.4, 0, 0, 0], [0, 0.4, 0, 0], [0, 0, 0, 1]],
+          "frameOfReferenceUID": "1.2.840.54321",
+          "source": "dicom_classic_singleframe"
+        }
+      },
+      {
+        "id": "enhanced_multiframe",
+        "description": "Enhanced multi-frame CT with regular spacing",
+        "input": {
+          "width": 512,
+          "height": 512,
+          "metas": [
+            {
+              "InstanceNumber": 1,
+              "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+              "ImagePositionPatient": [0, 0, 0],
+              "PixelSpacing": [0.5, 0.5],
+              "SliceThickness": 1.0,
+              "FrameOfReferenceUID": "1.2.840.enhanced"
+            },
+            {
+              "InstanceNumber": 2,
+              "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+              "ImagePositionPatient": [0, 0, 1],
+              "PixelSpacing": [0.5, 0.5],
+              "SliceThickness": 1.0,
+              "FrameOfReferenceUID": "1.2.840.enhanced"
+            },
+            {
+              "InstanceNumber": 3,
+              "ImageOrientationPatient": [1, 0, 0, 0, 1, 0],
+              "ImagePositionPatient": [0, 0, 2],
+              "PixelSpacing": [0.5, 0.5],
+              "SliceThickness": 1.0,
+              "FrameOfReferenceUID": "1.2.840.enhanced"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "cartesian_volume",
+          "dimensions": { "width": 512, "height": 512, "depth": 3 },
+          "spacingMm": { "row": 0.5, "col": 0.5, "slice": 1.0 },
+          "sliceSpacingStatsMm": { "mean": 1.0, "min": 1.0, "max": 1.0, "regular": true },
+          "orientation": [1, 0, 0, 0, 1, 0],
+          "firstIPP": [0, 0, 0],
+          "lastIPP": [0, 0, 2],
+          "affineLps": [[0.5, 0, 0, 0], [0, 0.5, 0, 0], [0, 0, 1.0, 0], [0, 0, 0, 1]],
+          "frameOfReferenceUID": "1.2.840.enhanced",
+          "source": "dicom_enhanced_multiframe"
+        }
+      }
+    ]
+  }
+}

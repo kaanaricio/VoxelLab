@@ -1,0 +1,364 @@
+  aside { background: var(--panel); display: flex; flex-direction: column; overflow: visible; }
+  aside.left  { border-right: 1px solid var(--border); }
+  /* Scroll lives in .right-panel-scroll so headers stay fixed like the left sidebar. */
+  aside.right { border-left:  1px solid var(--border); overflow: visible; }
+  .right-panel-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    /* Avoid browser scroll anchoring jumping the rail when sections above change height during expand/collapse. */
+    overflow-anchor: none;
+  }
+
+  /* Sidebar header */
+  .sidebar-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 var(--chrome-header-pr) 0 var(--chrome-header-pl);
+    height: var(--chrome-header-height);
+    min-height: var(--chrome-header-height);
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .sidebar-header-left {
+    justify-content: flex-start;
+  }
+  .sidebar-brand {
+    font-size: 13px; font-weight: 500;
+    color: var(--text); letter-spacing: -0.01em;
+  }
+  .sidebar-brand-muted { color: var(--muted); font-weight: 400; }
+  /* Right Details rail: match section overlines (see --rail-title in base.css) */
+  aside.right .sidebar-brand-muted,
+  #mobile-panel-header .sidebar-brand-muted {
+    color: var(--rail-title);
+  }
+  .sidebar-header-right { justify-content: flex-end; gap: 0; }
+  .sidebar-header-right .sidebar-brand { margin-right: auto; }
+  .theme-icon-hidden { display: none; }
+  .sidebar-header .act-btn { width: 24px; height: 24px; }
+  .sidebar-header .act-btn svg { width: 14px; height: 14px; }
+
+  /* Sidebar row — shared by upload, search, and action items */
+  .sidebar-row {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font: inherit; font-size: 12px; font-weight: 500;
+    line-height: 20px;
+    cursor: pointer;
+    text-align: left;
+    transition: background .08s, color .08s;
+  }
+  .sidebar-row:hover { background: var(--hover); color: var(--text); }
+  /* Inline icon inside sidebar rows — matches project-toggle icon size */
+  .sidebar-ico {
+    width: 14px; height: 14px; flex-shrink: 0;
+    color: var(--icon-idle);
+  }
+  .sidebar-row:hover .sidebar-ico { color: var(--text); }
+  /* Shortcut badge pushed to right edge */
+  .sidebar-shortcut {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 2px; flex-shrink: 0;
+  }
+  .sidebar-shortcut kbd {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 16px; height: 16px; padding: 0 3px;
+    border-radius: var(--radius);
+    background: var(--elev); border: 1px solid var(--border);
+    font: inherit; font-size: 9px; color: var(--dim);
+  }
+
+  /* Section header — inline label + action buttons */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px var(--chrome-header-pr) 6px var(--chrome-header-pl);
+  }
+  .section-title {
+    font-size: 10px; font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+  }
+  .sidebar-actions {
+    display: flex; align-items: center; gap: 2px;
+  }
+  .sidebar-actions .act-btn { width: 24px; height: 24px; }
+  .sidebar-actions .act-btn svg { width: 14px; height: 14px; }
+
+  /* Series scroll area */
+  .series-scroll {
+    flex: 1 1 auto; overflow-y: auto;
+    padding: 0; min-height: 0;
+  }
+  .series-list { list-style: none; }
+  /* Fade in study rows after list is populated (see projects-sidebar.js scheduleStudiesFadeIn) */
+  aside.left #series-list.studies-fade-in,
+  aside.left #pinned-list.studies-fade-in {
+    animation: ui-fade-in 0.38s ease forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    aside.left #series-list.studies-fade-in,
+    aside.left #pinned-list.studies-fade-in {
+      animation: none;
+      opacity: 1;
+    }
+  }
+  .series-list li {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background .08s;
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .series-list li:hover  { background: var(--hover); }
+  .series-list li.active { background: var(--active-bg); }
+  /* Multi-select: shift/cmd click marks items without changing the active viewer */
+  .series-list li.multi-selected {
+    background: var(--accent-bg);
+    box-shadow: inset 2px 0 0 var(--text);
+  }
+  .series-list li.multi-selected:hover { background: var(--hover); }
+  .series-list .sname {
+    font-weight: 500; font-size: 12px;
+    color: var(--text);
+    line-height: 1.35;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .series-list .sdesc {
+    color: var(--muted); font-size: 11px; margin-top: 1px;
+    font-weight: 400; line-height: 1.3;
+    white-space: nowrap; overflow: hidden; position: relative;
+    mask-image: linear-gradient(to right, #000 75%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, #000 75%, transparent 100%);
+  }
+  /* AI status dot */
+  .series-list .ai-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--text); opacity: 0.6;
+    flex-shrink: 0;
+  }
+  .series-list .ai-dot.none { background: var(--dim); opacity: 0.4; }
+
+  /* Pinned items — single line, reuses .pin-btn on the LEFT */
+  .pinned-row {
+    display: flex; align-items: center; gap: 8px;
+  }
+  /* No active-bg on pinned rows — but keep the normal hover bg from .series-list li:hover */
+  .series-list li.pinned-row.active:not(:hover) { background: transparent; }
+  /* Override the default .pin-btn styling: in-flow (not absolute), always visible.
+     Selector specificity must beat `.series-list li .pin-btn` since #pinned-list
+     is also a .series-list.
+     Size matches .sidebar-ico (14px) so the icon x-position aligns with
+     upload/search/folder icons above and below. */
+  .series-list li.pinned-row .pin-btn {
+    position: static; transform: none;
+    width: 14px; height: 14px;
+    color: var(--icon-idle);
+    flex-shrink: 0;
+  }
+  .series-list li.pinned-row .pin-btn:hover { color: var(--text); background: transparent; }
+  .pinned-row .sname {
+    flex: 1; min-width: 0;
+    font-weight: 500; font-size: 12px; color: var(--text);
+    line-height: 20px;  /* match .sidebar-row for 36px total row height */
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  /* Pin button: always rendered (no height shift), invisible until hover */
+  .series-list li .pin-btn {
+    display: flex; position: absolute;
+    right: 8px; top: 50%;
+    transform: translateY(-50%);
+    background: transparent; border: none; cursor: pointer;
+    color: transparent; padding: 0;
+    width: 24px; height: 24px;
+    border-radius: var(--radius);
+    align-items: center; justify-content: center;
+    transition: color .08s, background .08s;
+  }
+  .series-list li:hover .pin-btn { color: var(--icon-idle); }
+  .series-list li .pin-btn:hover { color: var(--text); background: var(--panel); }
+  .series-list li .pin-btn svg { width: 14px; height: 14px; }
+  .series-list li.pinned .pin-btn { color: var(--icon-idle); }
+
+  /* Series thumbnail tooltip (left sidebar hover preview) */
+  #series-thumb-tip {
+    position: fixed; z-index: 600; pointer-events: none;
+    background: var(--panel);
+    border-radius: var(--radius-lg);
+    padding: 6px;
+    border: 1px solid var(--border);
+    opacity: 0; transition: opacity .15s .25s;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+  }
+  #series-thumb-tip.visible { opacity: 1; }
+  #series-thumb-tip img {
+    display: block; width: 160px; height: 160px;
+    object-fit: contain; border-radius: var(--radius);
+    background: #000;
+    image-rendering: auto;
+    outline: 1px solid var(--border);
+    outline-offset: -1px;
+  }
+  #series-thumb-tip .thumb-label {
+    font-size: 10px; color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* Study-type buckets (same collapse affordance as folders; unpinned list only) */
+  .study-type-group { margin: 0; }
+  .study-type-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px;
+    min-height: 36px;
+    cursor: pointer; user-select: none;
+    color: var(--muted); font-size: 12px; font-weight: 500;
+    transition: background .08s, color .08s;
+  }
+  .study-type-header:hover { background: var(--hover); color: var(--text); }
+  .study-type-header:active { opacity: 0.7; }
+  .study-type-label {
+    flex: 1; min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    line-height: 14px;
+  }
+
+  /* Project folders (left sidebar) */
+  .project-folder { margin: 0; }
+  .project-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px;
+    min-height: 36px;
+    cursor: pointer; user-select: none;
+    color: var(--muted); font-size: 12px; font-weight: 500;
+    transition: background .08s, color .08s;
+  }
+  .project-header:hover { background: var(--hover); color: var(--text); }
+  .project-header:active { opacity: 0.7; }
+
+  /* Single toggle icon: shows folder by default, chevron on hover */
+  .project-toggle {
+    width: 14px; height: 14px;
+    flex-shrink: 0; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .project-toggle svg {
+    width: 14px; height: 14px; position: absolute;
+  }
+  .toggle-chevron {
+    opacity: 0;
+    transform: rotate(0deg);
+    /* No transition on opacity — prevents the flash when the folder
+       re-renders after click (the user is hovering so chevron should
+       stay visible instantly, not fade in from folder icon) */
+  }
+  .project-header:hover .toggle-folder,
+  .study-type-header:hover .toggle-folder { opacity: 0; }
+  .project-header:hover .toggle-chevron,
+  .study-type-header:hover .toggle-chevron { opacity: 1; }
+  .project-folder.collapsed .toggle-chevron,
+  .study-type-group.collapsed .toggle-chevron {
+    transform: rotate(-90deg);
+    transition: transform .15s;
+  }
+
+  .project-name {
+    flex: 1; min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    line-height: 14px;
+    text-transform: none; font-weight: 500;
+  }
+  /* 3-dot menu button: ALWAYS rendered (reserves space) but invisible
+     until the row is hovered. This prevents height shift on hover. */
+  .project-menu-btn {
+    display: flex; flex-shrink: 0;
+    width: 24px; height: 24px;
+    margin-right: -4px;
+    background: transparent; border: none; cursor: pointer;
+    color: transparent; border-radius: var(--radius);
+    align-items: center; justify-content: center; padding: 0;
+    transition: color .08s, background .08s;
+    position: relative;
+  }
+  .project-menu-btn svg { width: 14px; height: 14px; }
+  .project-header:hover .project-menu-btn { color: var(--icon-idle); }
+  .project-menu-btn:has(.folder-menu) { color: var(--text); }
+  .project-menu-btn:hover { color: var(--text); background: var(--panel); }
+  .project-menu-btn:active { opacity: 0.7; }
+
+  /* Folder/sort menu items inherit from .popover-item (design system) */
+
+  .project-rename-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .project-rename-card {
+    min-width: 280px;
+    max-width: 360px;
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  .project-rename-title {
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .project-rename-dialog-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    background: var(--elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    outline: none;
+  }
+  .project-rename-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+  }
+  .project-menu-anchor {
+    position: relative;
+  }
+  .folder-menu,
+  .sort-popover {
+    top: 100%;
+    right: 0;
+    margin-top: var(--space-xs);
+    min-width: 130px;
+  }
+  .sort-popover {
+    min-width: 150px;
+  }
+  .popover-label-grow {
+    flex: 1;
+  }
+  .popover-separator {
+    height: 1px;
+    background: var(--border);
+  }
+  .project-folder li,
+  .study-type-group li { padding-left: 34px; }
+  .project-folder.drag-over {
+    background: var(--accent-bg);
+    box-shadow: inset 2px 0 0 var(--text);
+  }

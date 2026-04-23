@@ -1,0 +1,97 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voxellab-tooling"
+version = "0.1.0"
+description = "Developer tooling for VoxelLab."
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "basedpyright>=1.28.0",
+]
+pipeline = [
+  "numpy",
+  "pydicom",
+  "Pillow>=9.1",
+  "scipy",
+  "scikit-learn",
+  "nibabel",
+]
+cloud = [
+  "boto3",
+  "botocore",
+  "modal",
+]
+rtk = [
+  "itk-rtk>=2.7,<2.8",
+]
+gpu = [
+  "torch",
+  "torchvision",
+  "hd-bet",
+]
+ai = [
+  "numpy",
+  "Pillow>=9.1",
+]
+
+[tool.setuptools]
+py-modules = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+
+# Baseline: start with analysis mostly off, then tighten individual report* rules over time.
+# basedpyright/pyright read [tool.pyright]; keep a single source of truth for CI and editors.
+[tool.pyright]
+pythonVersion = "3.11"
+include = ["."]
+exclude = [
+  "**/__pycache__",
+  ".venv",
+  "node_modules",
+  "data_compressed",
+  "test-results",
+  "synthseg_repo",
+]
+typeCheckingMode = "standard"
+# Shape: ["scripts/check_assets.py", ...] is the current strict subset that
+# already passes higher-signal checks without pretending the full tree is strict.
+strict = [
+  "scripts/check_ai_ready.py",
+  "scripts/check_assets.py",
+  "scripts/check_env.py",
+  "scripts/check_pipeline_ready.py",
+  "scripts/check_validation_matrix.py",
+]
+# Noisy / strict rules relaxed until more annotations land (see Python type-safety plan).
+reportUnknownVariableType = "none"
+reportUnknownMemberType = "none"
+reportUnknownArgumentType = "none"
+reportUnknownParameterType = "none"
+reportAny = "none"
+reportMissingTypeStubs = "none"
+reportUnusedCallResult = "error"
+reportImplicitStringConcatenation = "error"
+reportArgumentType = "none"
+reportAssignmentType = "none"
+reportReturnType = "none"
+reportAttributeAccessIssue = "none"
+reportOptionalSubscript = "none"
+reportOptionalIterable = "none"
+reportOptionalMemberAccess = "none"
+reportOperatorIssue = "none"
+reportCallIssue = "none"
+reportIndexIssue = "none"
+reportRedeclaration = "error"
+reportGeneralTypeIssues = "none"
+# Optional stacks (modal, ants, itk, torch) are not installed in minimal [dev] venvs.
+reportMissingImports = "none"
+reportMissingModuleSource = "none"

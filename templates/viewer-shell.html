@@ -1,0 +1,165 @@
+<div class="viewer-header" id="viewer-header">
+  <button class="act-btn viewer-header-toggle" id="btn-show-left" data-tip="Show Sidebar" data-tip-pos="bottom-start" aria-label="Show Sidebar" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/>
+    </svg>
+  </button>
+  <div class="viewer-header-study">
+    <span class="vh-name" id="series-name"></span>
+    <span class="vh-sep vh-study-divider" aria-hidden="true"></span>
+    <span class="vh-desc" id="series-desc"></span>
+  </div>
+  <div class="viewer-header-spacer"></div>
+  <div class="viewer-header-actions">
+    <button class="act-btn" id="btn-shot" data-tip="Screenshot (s)" data-key="s" aria-label="Screenshot"><svg><use href="icons.svg#i-camera"/></svg></button>
+    <button class="act-btn vh-advanced" id="btn-sr" data-tip="DICOM SR" aria-label="DICOM SR"><svg><use href="icons.svg#i-download"/></svg></button>
+    <span class="vh-sep vh-advanced"></span>
+    <button class="act-btn vh-advanced" id="btn-ask" data-tip="Ask (k)" data-key="k" aria-label="Ask"><svg><use href="icons.svg#i-sparkles"/></svg></button>
+    <button class="act-btn vh-advanced" id="btn-consult" data-tip="Consult" aria-label="Consult"><svg><use href="icons.svg#i-scroll"/></svg></button>
+    <button class="act-btn vh-advanced" id="btn-slimsam" data-tip="SlimSAM click-to-segment" aria-label="SlimSAM"><svg><use href="icons.svg#i-layers"/></svg></button>
+    <span class="vh-sep vh-advanced"></span>
+    <button class="act-btn vh-advanced" id="btn-help" data-tip="Help (?)" data-key="?" aria-label="Help"><svg><use href="icons.svg#i-help"/></svg></button>
+  </div>
+  <div class="viewer-header-right-actions" id="viewer-header-right-actions">
+    <button class="act-btn viewer-header-toggle" id="btn-show-right" data-tip="Show Panel" data-tip-pos="bottom-end" aria-label="Show Panel" hidden>
+      <svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <line x1="15" y1="3" x2="15" y2="21"/>
+      </svg>
+    </button>
+  </div>
+</div>
+<div class="canvas-wrap" id="canvas-wrap">
+  <div class="viewer-spinner" id="viewer-spinner" hidden></div>
+
+  <div class="empty-state" id="empty-state">
+    <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="17 8 12 3 7 8"/>
+      <line x1="12" y1="3" x2="12" y2="15"/>
+    </svg>
+    <div class="empty-state-title">Open a study</div>
+    <div class="empty-state-subtitle">
+      Drop files anywhere, or click <b>Upload study</b> in the sidebar.
+    </div>
+    <div class="empty-state-badges">
+      <span class="empty-state-badge">DICOM</span>
+      <span class="empty-state-badge">NIfTI</span>
+      <span class="empty-state-badge">JPEG2000</span>
+    </div>
+    <div class="empty-state-privacy">
+      <svg class="empty-state-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      Files never leave your browser
+    </div>
+  </div>
+
+  <div class="view-stage" id="view-stage">
+    <div class="view-xform view-awaiting-slice" id="view-xform">
+      <canvas id="view" width="512" height="512" role="img" aria-label="Medical image slice"></canvas>
+      <svg id="overlay-svg"></svg>
+      <div class="orient-marker orient-left" id="orient-left"></div>
+      <div class="orient-marker orient-right" id="orient-right"></div>
+      <div class="orient-marker orient-top" id="orient-top"></div>
+      <div class="orient-marker orient-bottom" id="orient-bottom"></div>
+    </div>
+  </div>
+  <div id="three-container"></div>
+  <div id="zoom-badge">1.0x</div>
+  <div id="ask-mode-hint" class="ask-mode-hint" hidden aria-live="polite">Drag on the slice to select a region, then type your question</div>
+  <div id="ask-reticle" class="ask-reticle" hidden aria-hidden="true"></div>
+  <div id="hover-readout"></div>
+  <div class="cmp-grid" id="cmp-grid"></div>
+
+  <div class="mpr-grid" id="mpr-grid">
+    <div class="mpr-cell" data-axis="ax">
+      <canvas id="mpr-ax" role="img" aria-label="Axial slice"></canvas>
+      <div class="mpr-crosshair" id="mpr-ax-cross"><span class="mpr-cross-x"></span><span class="mpr-cross-y"></span></div>
+      <div class="mpr-lbl">Axial</div>
+      <div class="mpr-idx" id="mpr-ax-idx">—</div>
+      <span class="mpr-orient mpr-orient-l" id="mpr-ax-ol"></span>
+      <span class="mpr-orient mpr-orient-r" id="mpr-ax-or"></span>
+      <span class="mpr-orient mpr-orient-t" id="mpr-ax-ot"></span>
+      <span class="mpr-orient mpr-orient-b" id="mpr-ax-ob"></span>
+    </div>
+    <div class="mpr-cell" data-axis="co">
+      <canvas id="mpr-co" role="img" aria-label="Coronal slice"></canvas>
+      <div class="mpr-crosshair" id="mpr-co-cross"><span class="mpr-cross-x"></span><span class="mpr-cross-y"></span></div>
+      <div class="mpr-lbl">Coronal</div>
+      <div class="mpr-idx" id="mpr-co-idx">—</div>
+      <span class="mpr-orient mpr-orient-l" id="mpr-co-ol"></span>
+      <span class="mpr-orient mpr-orient-r" id="mpr-co-or"></span>
+      <span class="mpr-orient mpr-orient-t" id="mpr-co-ot"></span>
+      <span class="mpr-orient mpr-orient-b" id="mpr-co-ob"></span>
+    </div>
+    <div class="mpr-cell" data-axis="sa">
+      <canvas id="mpr-sa" role="img" aria-label="Sagittal slice"></canvas>
+      <div class="mpr-crosshair" id="mpr-sa-cross"><span class="mpr-cross-x"></span><span class="mpr-cross-y"></span></div>
+      <div class="mpr-lbl">Sagittal</div>
+      <div class="mpr-idx" id="mpr-sa-idx">—</div>
+      <span class="mpr-orient mpr-orient-l" id="mpr-sa-ol"></span>
+      <span class="mpr-orient mpr-orient-r" id="mpr-sa-or"></span>
+      <span class="mpr-orient mpr-orient-t" id="mpr-sa-ot"></span>
+      <span class="mpr-orient mpr-orient-b" id="mpr-sa-ob"></span>
+    </div>
+    <div class="mpr-cell" data-axis="ob">
+      <canvas id="mpr-ob" role="img" aria-label="Oblique slice"></canvas>
+      <div class="mpr-lbl">Oblique</div>
+      <div class="mpr-idx" id="mpr-ob-idx">—</div>
+    </div>
+    <div class="mpr-toolbar" id="mpr-toolbar">
+      <div class="mpr-tb-pills" id="mpr-proj-group">
+        <button class="mpr-proj-btn active" data-proj="thin" type="button">Thin</button>
+        <button class="mpr-proj-btn" data-proj="avg" type="button">Avg</button>
+        <button class="mpr-proj-btn" data-proj="mip" type="button">MIP</button>
+        <button class="mpr-proj-btn" data-proj="minip" type="button">MinIP</button>
+      </div>
+      <div class="mpr-tb-group">
+        <span class="mpr-tb-lbl">Slab</span>
+        <input type="range" class="mpr-tb-sl mpr-tb-sl--slab" id="mpr-slab" min="0" max="40" value="0" step="1" />
+        <span class="mpr-tb-val" id="mpr-slab-val">0 mm</span>
+      </div>
+      <div class="mpr-tb-sep"></div>
+      <div class="mpr-tb-group">
+        <span class="mpr-tb-lbl">Yaw</span>
+        <input type="range" class="mpr-tb-sl" id="ob-yaw" min="-180" max="180" value="0" step="1" />
+        <span class="mpr-tb-val" id="ob-yaw-val">0°</span>
+      </div>
+      <div class="mpr-tb-group">
+        <span class="mpr-tb-lbl">Pitch</span>
+        <input type="range" class="mpr-tb-sl" id="ob-pitch" min="-90" max="90" value="0" step="1" />
+        <span class="mpr-tb-val" id="ob-pitch-val">0°</span>
+      </div>
+      <button class="mpr-tb-btn" id="ob-reset" type="button">Reset</button>
+      <div class="mpr-tb-sep"></div>
+      <div class="mpr-tb-group">
+        <button class="mpr-tb-btn" id="mpr-zoom-out" type="button" aria-label="Zoom out">−</button>
+        <span class="mpr-tb-val" id="mpr-zoom-val">100%</span>
+        <button class="mpr-tb-btn" id="mpr-zoom-in" type="button" aria-label="Zoom in">+</button>
+        <button class="mpr-tb-btn" id="mpr-zoom-fit" type="button">Fit</button>
+      </div>
+      <div class="mpr-tb-sep"></div>
+      <label class="mpr-tb-gpu ui-switch">
+        <input type="checkbox" id="mpr-gpu-toggle" class="ui-switch-input" />
+        <span class="ui-switch-track" aria-hidden="true"><span class="ui-switch-thumb"></span></span>
+        <span id="mpr-gpu-note">CPU</span>
+      </label>
+      <div class="mpr-tb-overlays" id="mpr-overlay-status">
+        <span class="mpr-tb-pill" id="mpr-pill-tissue" hidden>Tissue</span>
+        <span class="mpr-tb-pill" id="mpr-pill-regions" hidden>Regions</span>
+        <span class="mpr-tb-pill" id="mpr-pill-sym" hidden>Symmetry</span>
+        <span class="mpr-tb-pill" id="mpr-pill-fusion" hidden>Fusion</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ov tl"><div class="ov-num" id="slice-big">1</div><div class="ov-label">slice</div></div>
+  <div class="ov bl" id="wl-overlay"><span class="wl-label">W/L</span><span id="wl-readout" class="wl-value">—</span></div>
+</div>
+
+<canvas id="sparkline" role="img" aria-label="Slice intensity sparkline" hidden></canvas>
+<div id="toolbar-root"></div>
+<div class="mobile-backdrop" id="mobile-backdrop"></div>
+<div id="series-thumb-tip"><img /><div class="thumb-label"></div></div>
+<div id="annot-hover"></div>

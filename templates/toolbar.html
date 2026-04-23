@@ -1,0 +1,103 @@
+<div class="controls">
+  <div class="scrub-block">
+    <button class="icon-btn cine" id="btn-play" data-tip="Play / pause (space)" aria-label="Play / pause">
+      <svg class="ico"><use href="icons.svg#i-play"/></svg>
+    </button>
+    <div class="scrubber">
+      <div id="scrub-ticks" aria-hidden="true"></div>
+      <input type="range" id="scrub" min="0" max="0" value="0" aria-label="Slice" />
+    </div>
+    <div class="ctr-count" aria-busy="true" aria-label="Slice position">
+      <span class="ctr-part ctr-part--cur"><b id="slice-cur"></b></span><span class="ctr-sep">/</span><span class="ctr-part ctr-part--tot"><span id="slice-tot"></span></span>
+    </div>
+    <div class="cine-speed" data-tip="Playback speed">
+      <input type="range" id="fps" min="5" max="30" value="12" aria-label="fps" />
+      <span class="cine-fps"><span id="fps-val">12</span><span class="cine-fps-unit">fps</span></span>
+    </div>
+  </div>
+
+  <div class="toolbar-sep toolbar-sep--after-scrub" aria-hidden="true"></div>
+
+  <div class="tool-rail-wrap" id="tool-rail-wrap">
+  <div class="tool-rail" id="tool-rail">
+  <div class="tool-group" data-tg="display">
+    <button class="icon-btn" id="btn-auto" data-tip="Auto contrast (a)" data-key="a" aria-label="Auto contrast"><svg class="ico"><use href="icons.svg#i-sun"/></svg></button>
+    <button class="icon-btn" id="btn-invert" data-tip="Invert (i)" data-key="i" aria-label="Invert"><svg class="ico"><use href="icons.svg#i-flip"/></svg></button>
+    <button class="icon-btn" id="btn-zoomfit" data-tip="Fit (f)" data-key="f" aria-label="Zoom to fit"><svg class="ico"><use href="icons.svg#i-maximize"/></svg></button>
+    <div class="custom-dropdown" id="cmap-dropdown">
+      <button class="dd-trigger" id="cmap-trigger" aria-label="Colormap" aria-haspopup="listbox" aria-expanded="false"><span id="cmap-label">Grayscale</span><svg class="dd-chevron"><use href="icons.svg#i-chevron-down"/></svg></button>
+      <div class="dd-menu" id="cmap-menu" role="listbox"></div>
+    </div>
+  </div>
+
+  <div class="tool-group tool-group--wl" data-tg="wl">
+    <div class="mr-presets" id="mr-presets" hidden>
+      <button class="icon-btn" data-mrpreset="full" data-tip="Full range" aria-label="Full range W/L preset">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/></svg>
+      </button>
+      <button class="icon-btn" data-mrpreset="contrast" data-tip="High contrast" aria-label="High contrast W/L preset">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="icon-btn" data-mrpreset="bright" data-tip="Bright" aria-label="Bright W/L preset">
+        <svg class="ico" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/></svg>
+      </button>
+    </div>
+    <div class="overlay-opacity-wrap" id="overlay-opacity-wrap" hidden>
+      <span class="oo-label">Opacity</span>
+      <input type="range" id="overlay-opacity" min="0" max="1" step="0.05" value="0.55" aria-label="Overlay opacity" />
+    </div>
+  </div>
+
+  <div class="toolbox" id="toolbox-measure">
+    <button class="toolbox-trigger" data-tip="Tools" aria-label="Measurement tools">
+      <svg class="ico"><use href="icons.svg#i-ruler"/></svg><span class="tb-dot"></span>
+    </button>
+    <div class="toolbox-panel" data-tg="measure">
+      <button class="icon-btn labeled" id="btn-measure" data-tip="Ruler (r)" data-key="r" aria-label="Ruler"><svg class="ico"><use href="icons.svg#i-ruler"/></svg><span>Ruler</span></button>
+      <button class="icon-btn labeled" id="btn-angle" data-tip="Angle (g)" data-key="g" aria-label="Angle"><svg class="ico"><use href="icons.svg#i-corner"/></svg><span>Angle</span></button>
+      <button class="icon-btn labeled" id="btn-roi-ell" data-tip="Ellipse ROI (e)" data-key="e" aria-label="Ellipse ROI"><svg class="ico"><use href="icons.svg#i-circle"/></svg><span>Ellipse</span></button>
+      <button class="icon-btn labeled" id="btn-roi-poly" data-tip="Polygon ROI (p)" data-key="p" aria-label="Polygon ROI"><svg class="ico"><use href="icons.svg#i-polygon"/></svg><span>Polygon</span></button>
+      <button class="icon-btn labeled" id="btn-annot" data-tip="Annotate (n)" data-key="n" aria-label="Annotate"><svg class="ico"><use href="icons.svg#i-pin"/></svg><span>Annot</span></button>
+      <button class="icon-btn labeled" id="btn-clear" data-tip="Clear slice" aria-label="Clear"><svg class="ico"><use href="icons.svg#i-x"/></svg><span>Clear</span></button>
+    </div>
+  </div>
+
+  <div class="toolbox" id="toolbox-overlays">
+    <button class="toolbox-trigger" data-tip="Overlays" aria-label="Overlay layers">
+      <svg class="ico"><use href="icons.svg#i-layers"/></svg><span class="tb-dot"></span>
+    </button>
+    <div class="toolbox-panel" data-tg="overlays">
+      <button class="icon-btn labeled" id="btn-brain" data-tip="Skull strip (B)" aria-label="Brain">
+        <svg class="ico"><use href="icons.svg#i-brain"/></svg><span>Brain</span>
+      </button>
+      <button class="icon-btn labeled" id="btn-seg" data-tip="Tissue overlay (T)" aria-label="Tissue">
+        <svg class="ico"><use href="icons.svg#i-grid"/></svg><span>Tissue</span>
+      </button>
+      <button class="icon-btn labeled" id="btn-regions" data-tip="Anatomy overlay" aria-label="Anatomy">
+        <svg class="ico"><use href="icons.svg#i-map"/></svg><span>Anatomy</span>
+      </button>
+      <button class="icon-btn labeled" id="btn-sym" data-tip="Symmetry (Y)" aria-label="Symmetry">
+        <svg class="ico"><use href="icons.svg#i-flip"/></svg><span>Symmetry</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="tool-group" data-tg="views">
+    <div class="custom-dropdown" id="cmp-dropdown">
+      <button class="icon-btn labeled" id="btn-compare" data-tip="Compare (c)" aria-label="Compare">
+        <svg class="ico"><use href="icons.svg#i-columns"/></svg><span>Compare</span>
+      </button>
+      <div class="dd-menu" id="cmp-menu" role="listbox"></div>
+    </div>
+    <button class="icon-btn labeled" id="btn-mpr" data-tip="MPR (m)" aria-label="MPR">
+      <svg class="ico"><use href="icons.svg#i-grid"/></svg><span>MPR</span>
+    </button>
+    <button class="icon-btn labeled" id="btn-3d" data-tip="3D (3)" aria-label="3D">
+      <svg class="ico"><use href="icons.svg#i-cube"/></svg><span>3D</span>
+    </button>
+  </div>
+  </div>
+  </div>
+
+
+</div>

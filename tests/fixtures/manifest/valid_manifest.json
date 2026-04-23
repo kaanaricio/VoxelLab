@@ -1,0 +1,25 @@
+{
+  "patient": "fixture",
+  "studyDate": "2026-04-09",
+  "series": [
+    {
+      "slug": "sample",
+      "name": "Sample",
+      "description": "Tiny fixture stack",
+      "slices": 2,
+      "width": 2,
+      "height": 1,
+      "pixelSpacing": [
+        0.5,
+        0.5
+      ],
+      "sliceThickness": 1.0,
+      "hasBrain": false,
+      "hasSeg": true,
+      "hasRaw": false,
+      "hasRegions": true,
+      "hasStats": false,
+      "hasAnalysis": false
+    }
+  ]
+}

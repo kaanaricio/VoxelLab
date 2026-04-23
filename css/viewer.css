@@ -1,0 +1,787 @@
+  /* main area */
+  main { display: flex; flex-direction: column; min-width: 0; position: relative; }
+
+  /* Viewer header — thin strip matching sidebar headers for visual continuity */
+  .viewer-header {
+    display: flex; align-items: center;
+    padding: 0 var(--chrome-header-pr) 0 var(--chrome-header-pl);
+    height: var(--chrome-header-height);
+    min-height: var(--chrome-header-height);
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+    flex-shrink: 0;
+    gap: 8px;
+    position: relative;
+    z-index: 20;
+  }
+  .viewer-header-study {
+    display: inline-flex; align-items: baseline; flex-wrap: nowrap; gap: 5px;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .viewer-header-study:has(#series-desc:empty) .vh-study-divider {
+    display: none;
+  }
+  /* Same 1px rule as header action groups; vertically centered vs baseline name/desc */
+  .viewer-header-study .vh-study-divider {
+    align-self: center;
+  }
+  .vh-name {
+    font-size: 12px; font-weight: 500; color: var(--text);
+    line-height: 1.25;
+    flex: 0 1 auto;
+    min-width: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .vh-desc {
+    font-size: 11px; color: var(--muted);
+    line-height: 1.25;
+    flex: 0 1 auto;
+    min-width: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .viewer-header-spacer { flex: 1; }
+  .viewer-header-actions,
+  .viewer-header-right-actions {
+    display: flex; align-items: center; gap: 2px;
+    flex-shrink: 0;
+  }
+  /* When the right slot only holds hidden UI (show-panel is unused while the
+     right rail is open), omit the flex item so header gap does not sit after Help. */
+  #viewer-header-right-actions:not(:has(> :not([hidden]))) {
+    display: none;
+  }
+  /* Theme + show-panel move into this slot when the right rail is collapsed; without
+     this, .viewer-header's 8px gap sits between Help (last in actions) and Theme and
+     reads as extra space vs the 2px gaps inside each action row. */
+  .app.right-collapsed .viewer-header-right-actions {
+    margin-left: -6px;
+  }
+  .viewer-header .act-btn {
+    width: 24px; height: 24px;
+  }
+  .viewer-header .act-btn svg {
+    width: 14px; height: 14px;
+  }
+  .vh-sep {
+    width: 1px; height: 14px;
+    background: var(--border);
+    margin: 0 4px;
+    flex-shrink: 0;
+  }
+
+  .canvas-wrap {
+    flex: 1;
+    min-height: 0;
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* Viewport wrapper that owns pan/zoom transforms. The canvas lives inside
+     and inherits the transform via CSS, so the rendering pipeline is
+     unchanged — we're just scaling and translating the displayed bitmap. */
+  .view-stage {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .view-xform {
+    position: relative;
+    transform-origin: center center;
+    transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--zoom, 1));
+    will-change: transform;
+  }
+  /* Hidden until first successful drawSlice (slice-view.js). Default in HTML too so reload doesn’t flash a black canvas before JS. */
+  .view-xform.view-awaiting-slice {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .view-xform.view-awaiting-slice canvas#view {
+    box-shadow: none;
+  }
+  canvas#view {
+    display: block;
+    border-radius: 3px; background: #000; cursor: ns-resize;
+    box-shadow: 0 0 0 1px var(--border), inset 0 0 20px rgba(0,0,0,0.3);
+    image-rendering: auto;
+  }
+  .view-xform.measuring canvas#view,
+  .view-xform.panning canvas#view { cursor: crosshair; }
+  #three-container { position: absolute; inset: 0; display: none; }
+  #three-container.active { display: block; }
+
+  /* Centered spinner for 3D / volume loading */
+  .viewer-spinner {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none; z-index: 3;
+  }
+  .viewer-spinner::after {
+    content: '';
+    width: 24px; height: 24px;
+    border: 2px solid var(--dim);
+    border-top-color: var(--text);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  .canvas-wrap.threeD canvas#view { display: none; }
+
+  /* Pointer-event layering per mode: only the active mode's container
+     receives pointer events. Without this, view-stage (the 2D layer) is
+     always inset:0 with pointer-events:auto and it intercepts drags that
+     should reach three.js's OrbitControls — which is why rotating a 3D
+     model got "stuck" when the cursor crossed onto the sidebars. */
+  .canvas-wrap .view-stage { pointer-events: auto; }
+  .canvas-wrap #three-container { pointer-events: none; }
+  .canvas-wrap.threeD .view-stage { pointer-events: none; }
+  .canvas-wrap.threeD #three-container.active { pointer-events: auto; }
+  .canvas-wrap.mpr .view-stage { pointer-events: none; }
+  .canvas-wrap.cmp .view-stage { pointer-events: none; }
+
+  /* Zoom badge (top-right of image area) */
+  #zoom-badge {
+    position: absolute; top: 8px; right: 8px;
+    font: 10px "SF Mono", Monaco, monospace;
+    color: rgba(255,255,255,0.6);
+    pointer-events: none; opacity: 0;
+    transition: opacity 0.2s ease-out;
+    letter-spacing: 0.02em;
+    background: rgba(0,0,0,0.6);
+    padding: 3px 7px;
+    border-radius: 3px;
+  }
+  #zoom-badge.visible { opacity: 1; }
+
+  /* SVG overlay for measurements, sitting on top of the canvas stage.
+     Lives inside the transform wrapper so it pans/zooms with the canvas.
+     Critical: the SVG container itself has pointer-events: none so it
+     never steals clicks from the canvas beneath. Individual shapes
+     (lines, dots, labels) explicitly re-enable pointer-events so they
+     can still be clicked for deletion. Before this, measure mode would
+     silently swallow the first click because the empty SVG box
+     intercepted it. */
+  #overlay-svg {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+  /* Measurement lines themselves aren't clickable — only the explicit
+     delete button below is. This prevents accidental deletions when the
+     user is trying to do anything near an existing line. */
+  .m-line   { stroke: #ffffff; stroke-width: 1.5; fill: none;
+              pointer-events: none; }
+  .m-dot    { fill: #ffffff; stroke: #000; stroke-width: 1;
+              pointer-events: none; }
+  .m-label  {
+    fill: #ffffff; font-weight: 500;
+    font-family: -apple-system, system-ui, sans-serif;
+    paint-order: stroke; stroke: rgba(0,0,0,0.85); stroke-width: 3px;
+    pointer-events: none;
+  }
+
+  /* Delete-× button next to each measurement label */
+  .m-del-bg { fill: rgba(0, 0, 0, 0.65); stroke: rgba(255, 255, 255, 0.4); stroke-width: 1; pointer-events: none; opacity: 0.92; transition: fill .12s; }
+  .m-del-x  { stroke: #ffffff; stroke-width: 1.6; stroke-linecap: round; pointer-events: none; opacity: 0.92; transition: opacity .12s; }
+  .m-del-hit { fill: rgba(0, 0, 0, 0.01); pointer-events: all; cursor: pointer; opacity: 1; }
+  .m-group:hover .m-del-bg { fill: rgba(214, 118, 118, 0.9); }
+  .m-group:hover .m-line { stroke: var(--color-abnormal); }
+  .m-group:hover .m-label { fill: var(--color-abnormal); }
+
+  /* Brief reveal of delete button on newly placed measurements */
+  @keyframes m-del-hint {
+    0%   { opacity: 0; }
+    10%  { opacity: 0.4; }
+    70%  { opacity: 0.4; }
+    100% { opacity: 0; }
+  }
+  .m-group.m-new .m-del-bg,
+  .m-group.m-new .m-del-x { animation: m-del-hint 2s ease-out forwards; }
+
+  /* ROI tool — ellipse/polygon shapes + stat labels */
+  .roi-shape {
+    stroke: #7ec8e3; stroke-width: 1.5;
+    fill: rgba(126, 200, 227, 0.07);
+    pointer-events: none;
+  }
+  .roi-pending-shape {
+    stroke: #ffffff; fill: rgba(255, 255, 255, 0.06);
+    stroke-dasharray: 4 3;
+  }
+  .roi-dot { fill: #ffffff; stroke: #000; stroke-width: 1; pointer-events: none; }
+  .roi-label {
+    fill: #7ec8e3; font-weight: 500; font-size: 11px;
+    font-family: -apple-system, system-ui, sans-serif;
+    paint-order: stroke; stroke: rgba(0,0,0,0.85); stroke-width: 3px;
+    pointer-events: none;
+  }
+  .roi-del-bg { fill: rgba(0,0,0,0.65); stroke: rgba(255,255,255,0.4); stroke-width: 1; pointer-events: none; opacity: 0.92; transition: fill .12s; }
+  .roi-del-x  { stroke: #ffffff; stroke-width: 1.6; stroke-linecap: round; pointer-events: none; opacity: 0.92; transition: opacity .12s; }
+  .roi-del-hit { fill: rgba(0,0,0,0.01); pointer-events: all; cursor: pointer; opacity: 1; }
+  .roi-group:hover .roi-shape { stroke: var(--color-abnormal); fill: rgba(214, 118, 118, 0.1); }
+  .roi-group:hover .roi-label { fill: var(--color-abnormal); }
+  .roi-group:hover .roi-del-bg { fill: rgba(214, 118, 118, 0.9); }
+  .view-xform.roi-mode canvas#view { cursor: crosshair; }
+
+  /* overlays — always dark, sit on black canvas regardless of theme */
+  .ov { position: absolute; pointer-events: none; font-size: 11px;
+        color: #7a7a7a; font-variant-numeric: tabular-nums;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 6px 10px;
+        border-radius: 4px;
+  }
+  .ov.tl { top: 8px; left: 8px; }
+  .ov.bl { bottom: 8px; left: 8px; }
+  .ov-num  {
+    font-size: 28px; font-weight: 200;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: -0.02em; line-height: 1;
+    font-variant-numeric: tabular-nums;
+    font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+    min-width: 2.5ch;
+  }
+  .ov-label{
+    font-size: 9px; color: #7a7a7a;
+    text-transform: uppercase; letter-spacing: 0.12em; margin-top: 3px;
+  }
+
+  /* wl overlay */
+  #wl-overlay { opacity: 0; transition: opacity .2s; }
+  .canvas-wrap:hover #wl-overlay { opacity: 1; }
+
+  /* Hover readout badge floating near the cursor on the 2D canvas */
+  #hover-readout {
+    position: absolute; pointer-events: none; display: none;
+    background: rgba(10, 10, 10, 0.85);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius); padding: 6px 10px; font-size: 10px;
+    font-variant-numeric: tabular-nums; color: #e0e0e0; line-height: 1.55;
+    z-index: 10;
+  }
+  #hover-readout.visible { display: block; }
+  #hover-readout .hv-label { color: #7a7a7a; margin-right: 5px; }
+  #hover-readout .hv-tissue { color: #e0e0e0; font-weight: 500; }
+
+  /* Ask (k): spot picker — ring follows cursor; hint explains the gesture */
+  .ask-reticle {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 2px 12px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+    z-index: 90;
+    transform: translate(-50%, -50%);
+  }
+  .ask-mode-hint {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 88;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(0, 0, 0, 0.55);
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    pointer-events: none;
+    text-align: center;
+    max-width: min(440px, calc(100% - 24px));
+    line-height: 1.35;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .canvas-wrap.ask-picking #view {
+    cursor: crosshair !important;
+  }
+  svg#overlay-svg .ask-marquee {
+    fill: rgba(130, 185, 255, 0.14);
+    stroke: rgba(210, 230, 255, 0.92);
+    stroke-width: 1.25;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 5 4;
+    pointer-events: none;
+  }
+
+  .plugin-context-menu {
+    position: fixed;
+    z-index: 900;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-popover);
+  }
+  .plugin-context-menu-item {
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius);
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    padding: 7px 10px;
+    text-align: left;
+  }
+  .plugin-context-menu-item:hover {
+    background: var(--hover);
+  }
+
+  /* MPR / Compare modes share the same grid layout */
+  .mpr-grid, .cmp-grid {
+    position: absolute; inset: 0; display: none;
+    grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr auto; gap: 2px;
+    padding: 4px; background: #000;
+  }
+  /* Responsive: single column on narrow screens */
+  @media (max-width: 900px) {
+    .mpr-grid, .cmp-grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(4, 1fr) auto;
+    }
+    .mpr-toolbar { flex-wrap: wrap; padding: 3px 6px; }
+  }
+  .canvas-wrap.mpr .mpr-grid { display: grid; }
+  .canvas-wrap.cmp .cmp-grid { display: grid; }
+  .canvas-wrap.mpr canvas#view,
+  .canvas-wrap.cmp canvas#view { display: none; }
+  .canvas-wrap.mpr #three-container,
+  .canvas-wrap.cmp #three-container { display: none; }
+  /* Hide the on-canvas overlays (slice number + series name) in MPR
+     and Compare modes — these modes have their own per-cell badges
+     and showing the 2D overlay on top of the grid looks broken. */
+  .canvas-wrap.mpr .ov,
+  .canvas-wrap.cmp .ov { display: none; }
+  /* Also hide in 3D mode — the volume render fills the viewport and
+     the 2D slice counter is meaningless there. */
+  .canvas-wrap.threeD .ov { display: none; }
+
+  .mpr-cell,
+  .cmp-cell {
+    position: relative; background: #000; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border); border-radius: 3px;
+  }
+  .cmp-cell {
+    cursor: pointer; transition: border-color .08s;
+    min-width: 0; min-height: 0;
+  }
+  .cmp-cell:hover { border-color: var(--dim); }
+  .mpr-cell canvas {
+    max-width: 100%; max-height: 100%; cursor: crosshair;
+    transform-origin: 50% 50%;
+    will-change: transform;
+  }
+  .mpr-crosshair {
+    position: absolute; pointer-events: none;
+    --x: 50%; --y: 50%;
+  }
+  .mpr-crosshair .mpr-cross-x,
+  .mpr-crosshair .mpr-cross-y {
+    position: absolute; background: rgba(255,255,255,0.55);
+  }
+  .mpr-crosshair .mpr-cross-x {
+    top: 0; bottom: 0; left: var(--x); width: 1px;
+    transform: translateX(-0.5px);
+  }
+  .mpr-crosshair .mpr-cross-y {
+    left: 0; right: 0; top: var(--y); height: 1px;
+    transform: translateY(-0.5px);
+  }
+  /* Active pane focus — per-axis accent matching diagnostic workstation convention */
+  .mpr-cell.mpr-focused { border-width: 1.5px; }
+  .mpr-cell.mpr-focused[data-axis="ax"] { border-color: rgba(107,159,212,0.55); }
+  .mpr-cell.mpr-focused[data-axis="co"] { border-color: rgba(107,190,143,0.55); }
+  .mpr-cell.mpr-focused[data-axis="sa"] { border-color: rgba(212,168,107,0.55); }
+  .mpr-cell.mpr-focused[data-axis="ob"] { border-color: rgba(154,107,212,0.55); }
+  /* Axis-colored crosshairs: vertical line = intersecting sagittal plane,
+     horizontal line = intersecting coronal or axial plane */
+  .mpr-cell[data-axis="ax"] .mpr-cross-x { background: rgba(212,168,107,0.5); }
+  .mpr-cell[data-axis="ax"] .mpr-cross-y { background: rgba(107,190,143,0.5); }
+  .mpr-cell[data-axis="co"] .mpr-cross-x { background: rgba(212,168,107,0.5); }
+  .mpr-cell[data-axis="co"] .mpr-cross-y { background: rgba(107,159,212,0.5); }
+  .mpr-cell[data-axis="sa"] .mpr-cross-x { background: rgba(107,190,143,0.5); }
+  .mpr-cell[data-axis="sa"] .mpr-cross-y { background: rgba(107,159,212,0.5); }
+  .mpr-cell .mpr-lbl {
+    position: absolute; top: 6px; left: 8px; font-size: 9px;
+    color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.1em;
+    pointer-events: none; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+  .mpr-cell .mpr-idx {
+    position: absolute; bottom: 6px; right: 8px; font-size: 10px;
+    color: rgba(255,255,255,0.45); pointer-events: none;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+  /* Patient orientation markers (L/R/A/P/S/I) per orthogonal MPR pane */
+  .mpr-orient {
+    position: absolute; pointer-events: none; z-index: 2;
+    font: 600 11px/1 -apple-system, system-ui, sans-serif;
+    color: rgba(255,255,255,0.6);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+    letter-spacing: 0.03em;
+  }
+  .mpr-orient-l { left: 6px;   top: 50%; transform: translateY(-50%); }
+  .mpr-orient-r { right: 6px;  top: 50%; transform: translateY(-50%); }
+  .mpr-orient-t { top: 22px;   left: 50%; transform: translateX(-50%); }
+  .mpr-orient-b { bottom: 6px; left: 50%; transform: translateX(-50%); }
+
+  /* Unified MPR toolbar — spans full grid width below the 2×2 panes.
+     Always dark palette (sits on black grid regardless of theme). */
+  .mpr-toolbar {
+    --mpr-tb-bg: #0a0a0a;
+    --mpr-tb-surface: #171717;
+    --mpr-tb-surface-soft: #2a2a2a;
+    --mpr-tb-surface-strong: #3a3a3a;
+    --mpr-tb-border: #1e1e1e;
+    --mpr-tb-text: #f0f0f0;
+    --mpr-tb-muted: #7a7a7a;
+    --mpr-tb-thumb: #666;
+    --mpr-tb-knob-border: #111;
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap; justify-content: center;
+    padding: 6px 12px;
+    background: var(--mpr-tb-bg);
+    border-top: 1px solid var(--mpr-tb-border);
+    font-size: 10px; color: var(--mpr-tb-text);
+  }
+  .mpr-tb-group {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .mpr-tb-lbl { color: var(--mpr-tb-muted); white-space: nowrap; }
+  .mpr-tb-val {
+    min-width: 30px; text-align: center;
+    color: var(--mpr-tb-text); font-variant-numeric: tabular-nums;
+  }
+  .mpr-tb-sep {
+    width: 1px; height: 16px; background: var(--mpr-tb-surface-soft); flex-shrink: 0;
+  }
+  .mpr-tb-sl {
+    appearance: none; -webkit-appearance: none;
+    width: 64px; height: 2px; background: var(--mpr-tb-surface-strong); margin: 0;
+  }
+  .mpr-tb-sl--slab { width: 56px; }
+  .mpr-tb-sl::-webkit-slider-thumb {
+    -webkit-appearance: none; width: var(--compact-range-thumb); height: var(--compact-range-thumb); border-radius: 50%;
+    background: var(--mpr-tb-text); cursor: pointer;
+    border: var(--knob-border) solid var(--mpr-tb-knob-border);
+    box-shadow: 0 0 0 1px var(--mpr-tb-text), 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .mpr-tb-sl::-moz-range-thumb {
+    width: var(--compact-range-thumb); height: var(--compact-range-thumb); border-radius: 50%;
+    background: var(--mpr-tb-text); cursor: pointer;
+    border: var(--knob-border) solid var(--mpr-tb-knob-border);
+    box-shadow: 0 0 0 1px var(--mpr-tb-text), 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .mpr-tb-btn {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--mpr-tb-border);
+    color: var(--mpr-tb-text); border-radius: 4px; cursor: pointer; font: inherit;
+    padding: 3px 7px; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .mpr-tb-btn:hover { background: var(--mpr-tb-surface); }
+  .mpr-tb-btn:active { opacity: 0.7; }
+  /* Segmented pill group — mirrors codebase pill-group/pill pattern,
+     hardcoded to dark palette since toolbar is always on black. */
+  .mpr-tb-pills {
+    display: flex;
+    flex-shrink: 0;
+    border: 1px solid var(--mpr-tb-surface-soft);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .mpr-proj-btn {
+    padding: 3px 9px;
+    font: inherit; font-size: 10px; font-weight: 500;
+    color: var(--mpr-tb-muted);
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--mpr-tb-surface-soft);
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background .08s, color .08s;
+  }
+  .mpr-proj-btn:last-child { border-right: none; }
+  .mpr-proj-btn:hover { color: var(--mpr-tb-text); background: var(--mpr-tb-surface); }
+  .mpr-proj-btn:active { opacity: 0.7; }
+  .mpr-proj-btn.active { color: var(--mpr-tb-text); background: rgba(255,255,255,0.07); }
+  /* GPU path toggle — custom switch (native checkbox hidden); MPR chrome stays dark-on-canvas */
+  .mpr-tb-gpu.ui-switch {
+    display: flex; align-items: center; gap: 5px;
+    position: relative;
+    cursor: pointer; color: var(--mpr-tb-muted); white-space: nowrap;
+  }
+  .mpr-tb-gpu .ui-switch-input {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 18px;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 1;
+  }
+  .mpr-tb-gpu .ui-switch-track {
+    width: 32px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--mpr-tb-surface-soft);
+    position: relative;
+    flex: 0 0 auto;
+    transition: background 0.15s;
+    pointer-events: none;
+  }
+  .mpr-tb-gpu .ui-switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--mpr-tb-thumb);
+    transition: transform 0.15s, background 0.15s;
+  }
+  .mpr-tb-gpu .ui-switch-input:checked ~ .ui-switch-track {
+    background: var(--mpr-tb-surface-strong);
+  }
+  .mpr-tb-gpu .ui-switch-input:checked ~ .ui-switch-track .ui-switch-thumb {
+    transform: translateX(14px);
+    background: var(--mpr-tb-text);
+  }
+  .mpr-tb-gpu .ui-switch-input:disabled ~ .ui-switch-track {
+    opacity: 0.4;
+    cursor: default;
+  }
+  /* Overlay status pills — small indicators when tissue/regions/sym/fusion active */
+  .mpr-tb-overlays {
+    display: flex; align-items: center; gap: 4px; margin-left: auto;
+  }
+  .mpr-tb-pill {
+    padding: 2px 6px; border-radius: 3px; font-size: 9px;
+    font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+    background: rgba(90,182,255,0.15); color: rgba(90,182,255,0.85);
+    border: 1px solid rgba(90,182,255,0.25);
+  }
+
+  .cmp-cell canvas {
+    max-width: 100%; max-height: 100%;
+    object-fit: contain;
+  }
+  .cmp-cell .cmp-lbl {
+    position: absolute; top: 8px; left: 10px;
+    font-size: 10px; font-weight: 500;
+    color: rgba(255,255,255,0.8);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    pointer-events: none; letter-spacing: 0.04em;
+  }
+  .cmp-cell.out-of-range { border-color: rgba(255, 196, 112, 0.5); }
+  .cmp-cell.out-of-range .cmp-lbl { color: rgba(255, 214, 160, 0.95); }
+  .cmp-cell.primary { border-color: rgba(255,255,255,0.6); border-width: 2px; }
+
+  /* Empty state (no study loaded) */
+  /* Empty state: hidden by default, shown only when JS confirms no data.
+     This prevents the flash of "Open a study" on page load when data
+     is cached / already present in the manifest. */
+  .empty-state {
+    position: absolute; inset: 0;
+    display: none; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 5; background: var(--bg);
+  }
+  .canvas-wrap.no-series .empty-state { display: flex; }
+  /* No black canvas “card” behind the empty state — viewport is hidden until a study loads */
+  .canvas-wrap.no-series .view-stage,
+  .canvas-wrap.no-series #three-container,
+  .canvas-wrap.no-series #zoom-badge {
+    visibility: hidden;
+  }
+  .empty-state-icon {
+    width: 44px; height: 44px;
+    color: var(--dim);
+    margin-bottom: 14px;
+  }
+  .empty-state-title {
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .empty-state-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    max-width: 320px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .empty-state-badges {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .empty-state-badge {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--muted);
+    background: var(--elev);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+  }
+  .empty-state-privacy {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--dim);
+  }
+  .empty-state-lock {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+  .wl-label { color: var(--muted); }
+  .wl-value {
+    color: inherit;
+    opacity: 0.55;
+    margin-left: 4px;
+  }
+
+  /* Upload zone */
+  .upload-zone {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 28px 20px; cursor: pointer; text-align: center;
+    border: 2px dashed var(--dim); border-radius: 8px;
+    transition: border-color .15s, background .15s;
+    animation: zone-pulse 3s ease-in-out 1;
+  }
+  @keyframes zone-pulse {
+    0%, 100% { border-color: var(--dim); }
+    50% { border-color: var(--muted); }
+  }
+  .upload-zone:hover, .upload-zone.drag {
+    border-color: var(--text); background: var(--accent-bg);
+    animation: none;
+  }
+
+  /* DICOM orientation markers — anchored to .view-xform (the rendered image rect)
+     so they hug the image, not the canvas-wrap edges. This keeps them close to
+     the slice regardless of viewport aspect ratio (especially important on
+     narrow widths / mobile where the image is pillarboxed inside a wide wrap). */
+  .orient-marker {
+    position: absolute; pointer-events: none;
+    font: 600 13px/1 -apple-system, system-ui, sans-serif;
+    color: rgba(255, 255, 255, 0.7);
+    /* Above .viewer-spinner (z-index 3) so L/R/A/P/S/I stay visible during remote load */
+    z-index: 4;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 3px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Reserve one-glyph + padding size before text is set so the pill does not grow during ui-fade-in */
+    min-width: calc(1ch + 12px);
+    min-height: calc(1em + 6px);
+    /* Counter the parent .view-xform transform's scale so markers keep a fixed pixel
+       size regardless of user zoom. --zoom is set on .view-xform; fallback to 1. */
+    --orient-counter-scale: calc(1 / var(--zoom, 1));
+  }
+  /* Before labels exist, hide the chrome so we do not flash empty pills */
+  .orient-marker:empty {
+    opacity: 0;
+  }
+  .orient-left   { left: 6px;   top: 50%; transform: translateY(-50%) scale(var(--orient-counter-scale)); transform-origin: left center; }
+  .orient-right  { right: 6px;  top: 50%; transform: translateY(-50%) scale(var(--orient-counter-scale)); transform-origin: right center; }
+  .orient-top    { top: 6px;    left: 50%; transform: translateX(-50%) scale(var(--orient-counter-scale)); transform-origin: center top; }
+  .orient-bottom { bottom: 6px; left: 50%; transform: translateX(-50%) scale(var(--orient-counter-scale)); transform-origin: center bottom; }
+  /* Hide in non-2D modes (MPR/3D/Compare have their own indicators) */
+  .canvas-wrap.mpr .orient-marker,
+  .canvas-wrap.cmp .orient-marker,
+  .canvas-wrap.threeD .orient-marker,
+  .canvas-wrap.mpr3d .orient-marker { display: none; }
+
+  /* Symmetry sparkline — thin strip above the controls bar, full width */
+  #sparkline {
+    display: block; width: 100%; height: 16px;
+    background: var(--bg);
+    border-top: none;
+    cursor: pointer;
+    position: relative;
+  }
+  #sparkline:not([hidden]) {
+    border-top: 1px solid var(--border);
+  }
+
+  #toolbar-root {
+    position: relative;
+    z-index: 300;
+  }
+
+  /* 3D label list (per-structure visibility toggle) */
+  .label-list {
+    max-height: 260px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 1px;
+    margin-top: 6px;
+    padding: 4px 2px;
+  }
+  .label-list label.ui-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 2px;
+    cursor: pointer;
+    font-size: 11px;
+    border-radius: 2px;
+  }
+  .label-list label.ui-checkbox .label-list-text {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.35;
+  }
+  .label-list label.ui-checkbox .ui-checkbox-toggle {
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .label-list label.off { opacity: 0.35; }
+  .label-list .ll-swatch {
+    width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0;
+  }
+
+  /* dual MPR + 3D split view */
+  /* When both buttons are active the canvas-wrap becomes a horizontal
+     flexbox: 3D volume on the left (~60%), MPR grid on the right (~40%).
+     The 2D canvas, view-stage, and compare grid are hidden. */
+  .canvas-wrap.mpr3d { display: flex; gap: 2px; }
+  .canvas-wrap.mpr3d canvas#view,
+  .canvas-wrap.mpr3d .view-stage { display: none; }
+  .canvas-wrap.mpr3d .ov { display: none; }
+  .canvas-wrap.mpr3d #three-container {
+    display: block;
+    position: relative;    /* override absolute inset:0 */
+    flex: 3; min-width: 0;
+  }
+  .canvas-wrap.mpr3d #three-container.active { pointer-events: auto; }
+  .canvas-wrap.mpr3d .mpr-grid {
+    display: grid;
+    position: relative;    /* override absolute inset:0 */
+    flex: 2; min-width: 0;
+    padding: 6px;
+  }
+
+  /* Measurement hover state — show a pill with the mm value near the midpoint
+     and a small delete button on hover */
+  .m-line:hover { stroke: var(--color-abnormal); stroke-width: 2; }
+  .m-label:hover { fill: var(--color-abnormal); }
